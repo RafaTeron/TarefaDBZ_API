@@ -3,6 +3,7 @@ package br.com.rafaelAbreu.tarefaDbz.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
@@ -11,6 +12,7 @@ import br.com.rafaelAbreu.tarefaDbz.repositories.UsuarioRepository;
 @Service
 public class UsuarioService {
 	
+	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
 	public List<Usuario> findAll() {
