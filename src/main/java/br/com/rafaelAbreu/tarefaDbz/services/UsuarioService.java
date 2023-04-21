@@ -15,6 +15,8 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 	
+	private TarefaService tarefaService;
+	
 	public List<Usuario> findAll() {
 		return usuarioRepository.findAll();
 	}
@@ -27,6 +29,7 @@ public class UsuarioService {
 	public Usuario insert(Usuario obj) {
 		return usuarioRepository.save(obj);
 	}
+	
 	
 	public Usuario update(Long id, Usuario obj) {
 	    Usuario entity = usuarioRepository.getReferenceById(id);

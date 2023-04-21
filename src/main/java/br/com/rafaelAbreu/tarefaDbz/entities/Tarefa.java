@@ -3,10 +3,14 @@ package br.com.rafaelAbreu.tarefaDbz.entities;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,12 +24,19 @@ public class Tarefa implements Serializable{
 	
 	private String nome;
 
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn(name = "usuario_id")
+	private Usuario usuario;
+	
 	public Tarefa() {
 
 	}
-	
-	public Tarefa(String nome) {
+
+	public Tarefa(Long id, String nome, Usuario usuario) {
+		this.id = id;
 		this.nome = nome;
+		this.usuario = usuario;
 	}
 
 	public String getNome() {
@@ -36,10 +47,19 @@ public class Tarefa implements Serializable{
 		this.nome = nome;
 	}
 
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
 	}
+	
 
 	@Override
 	public boolean equals(Object obj) {

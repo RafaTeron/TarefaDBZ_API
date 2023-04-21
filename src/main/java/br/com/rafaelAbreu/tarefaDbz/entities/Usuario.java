@@ -1,6 +1,8 @@
 package br.com.rafaelAbreu.tarefaDbz.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TipoUsuario;
@@ -8,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,17 +27,24 @@ public class Usuario implements Serializable {
 	private String senha;
 	
 	private TipoUsuario raça;
+	
+	@OneToMany(mappedBy = "usuario")
+	public List<Tarefa> tarefa = new ArrayList<>();
 
 	public Usuario() {
 	
 	}
 
-	public Usuario(String nome, String email, String senha, TipoUsuario raça) {
+	public Usuario(Long id, String nome, String email, String senha, TipoUsuario raça) {
+		super();
+		this.id = id;
 		this.nome = nome;
 		this.email = email;
 		this.senha = senha;
 		this.raça = raça;
 	}
+
+
 
 	public String getNome() {
 		return nome;
@@ -67,7 +77,11 @@ public class Usuario implements Serializable {
 	public void setRaça(TipoUsuario raça) {
 		this.raça = raça;
 	}
-	
+
+	public List<Tarefa> getTarefa() {
+		return tarefa;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);

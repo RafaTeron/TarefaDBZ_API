@@ -34,7 +34,7 @@ public class TarefaResources {
 		return ResponseEntity.ok().body(obj);
 	}
 
-	@PostMapping
+	@PostMapping(value = "/{id}")
 	public ResponseEntity<Tarefa> insert(@RequestBody Tarefa pessoa) {
 		Tarefa obj = tarefaService.insert(pessoa);
 		return ResponseEntity.ok().body(obj);
