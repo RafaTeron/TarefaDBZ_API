@@ -71,6 +71,6 @@ public class Tarefa implements Serializable{
 			return false;
 		Tarefa other = (Tarefa) obj;
 		return Objects.equals(id, other.id);
-	}	
+	}
 
 }

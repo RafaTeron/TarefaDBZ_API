@@ -4,5 +4,5 @@ public enum TipoUsuario {
 	
 	HUMANO,
 	NAMEKIUSEIJIN,
-	SAIYAJIN;
+	SAYAJIN;
 }

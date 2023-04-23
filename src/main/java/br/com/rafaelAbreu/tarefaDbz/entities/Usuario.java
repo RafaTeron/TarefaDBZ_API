@@ -82,6 +82,10 @@ public class Usuario implements Serializable {
 		return tarefa;
 	}
 
+	public void setTarefa(List<Tarefa> tarefa) {
+		this.tarefa = tarefa;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
