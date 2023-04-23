@@ -26,7 +26,7 @@ public class Usuario implements Serializable {
 	private String email;
 	private String senha;
 	
-	private TipoUsuario raça;
+	private String raca;
 	
 	@OneToMany(mappedBy = "usuario")
 	public List<Tarefa> tarefa = new ArrayList<>();
@@ -35,13 +35,13 @@ public class Usuario implements Serializable {
 	
 	}
 
-	public Usuario(Long id, String nome, String email, String senha, TipoUsuario raça) {
+	public Usuario(Long id, String nome, String email, String senha, TipoUsuario raca) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.email = email;
 		this.senha = senha;
-		this.raça = raça;
+		setRaca(raca);;
 	}
 
 
@@ -71,11 +71,11 @@ public class Usuario implements Serializable {
 	}
 
 	public TipoUsuario getRaça() {
-		return raça;
+		return TipoUsuario.valueOfDescricao(raca);
 	}
 
-	public void setRaça(TipoUsuario raça) {
-		this.raça = raça;
+	public void setRaca(TipoUsuario raca) {
+		this.raca = raca.getDescricao();
 	}
 
 	public List<Tarefa> getTarefa() {

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
+import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 import br.com.rafaelAbreu.tarefaDbz.repositories.UsuarioRepository;
 
@@ -62,6 +63,7 @@ public class UsuarioService {
 	        if(tarefas.isEmpty()) {
 	            Tarefa tarefaAleatoria = tarefaRepository.encontrarTarefaAleatoria();
 	            tarefas.add(tarefaAleatoria);
+	            tarefaAleatoria.setStatus(TarefaStatus.EM_ANDAMENTO);
 	            tarefaAleatoria.setUsuario(usuario);
 	            tarefaRepository.save(tarefaAleatoria);
 	            usuario.setTarefa(tarefas);
@@ -81,6 +83,7 @@ public class UsuarioService {
 					if(opcao > 0 && opcao <= tarefasDisponiveis.size()) {
 					    Tarefa tarefaEscolhida = tarefasDisponiveis.get(opcao-1);
 					    tarefas.add(tarefaEscolhida);
+					    tarefaEscolhida.setStatus(TarefaStatus.EM_ANDAMENTO);
 					    tarefaEscolhida.setUsuario(usuario);
 					    tarefaRepository.save(tarefaEscolhida);
 					    usuario.setTarefa(tarefas);
