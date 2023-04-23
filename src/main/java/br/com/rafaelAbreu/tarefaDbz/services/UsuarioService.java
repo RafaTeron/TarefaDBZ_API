@@ -55,7 +55,7 @@ public class UsuarioService {
 	public void adicionarTarefa(Long idUsuario) {
 	    Optional<Usuario> usuarioOpt = usuarioRepository.findById(idUsuario);
 	    
-	    if(usuarioOpt.isPresent()) { // Verifica se o usuário existe
+	    if(usuarioOpt.isPresent()) {
 	        Usuario usuario = usuarioOpt.get();
 	        List<Tarefa> tarefas = usuario.getTarefa();
 	        

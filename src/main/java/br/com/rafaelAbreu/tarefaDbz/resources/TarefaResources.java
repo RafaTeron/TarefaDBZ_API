@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,7 +35,7 @@ public class TarefaResources {
 		return ResponseEntity.ok().body(obj);
 	}
 
-	@PostMapping(value = "/{id}")
+	@PostMapping
 	public ResponseEntity<Tarefa> insert(@RequestBody Tarefa pessoa) {
 		Tarefa obj = tarefaService.insert(pessoa);
 		return ResponseEntity.ok().body(obj);
@@ -44,6 +45,12 @@ public class TarefaResources {
 	public ResponseEntity<Tarefa> update(@PathVariable Long id, @RequestBody Tarefa obj) {
 		obj = tarefaService.update(id, obj);
 		return ResponseEntity.ok().body(obj);
+	}
+	
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		tarefaService.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 
 }

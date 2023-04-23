@@ -37,5 +37,9 @@ public class TarefaService {
 	private void updateData(Tarefa entity, Tarefa obj) {
 		entity.setNome(obj.getNome());
 	}
+	
+	public void deleteById(Long id) {
+		tarefaRepository.deleteById(id);
+	}
 
 }
