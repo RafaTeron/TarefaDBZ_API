@@ -1,5 +1,6 @@
 package br.com.rafaelAbreu.tarefaDbz.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,16 @@ public class TarefaService {
 	
 	public void deleteById(Long id) {
 		tarefaRepository.deleteById(id);
+	}
+	
+	public List<String> tarefasDisponiveis() {
+	    List<Tarefa> tarefasDisponiveis = tarefaRepository.encontrarTarefasDisponiveis();
+	    List<String> nomesTarefasDisponiveis = new ArrayList<>();
+	    for (int i = 0; i < tarefasDisponiveis.size(); i++) {
+	        Tarefa tarefaDisponivel = tarefasDisponiveis.get(i);
+	        nomesTarefasDisponiveis.add((i+1) + ". " + tarefaDisponivel.getNome());
+	    }
+	    return nomesTarefasDisponiveis;
 	}
 
 }

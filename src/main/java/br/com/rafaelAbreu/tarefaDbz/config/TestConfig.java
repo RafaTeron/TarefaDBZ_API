@@ -26,12 +26,6 @@ public class TestConfig implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-		// TODO Auto-generated method stub
-		
-		
-		
-		
-		
 		
 		Usuario u1 = new Usuario(null,"Goku" , "goku@gmail.com", "goku123" ,TipoUsuario.SAYAJIN);
 		Usuario u2 = new Usuario(null,"Kuririn", "kuririn@gmail.com", "kuririn123", TipoUsuario.HUMANO);
@@ -39,8 +33,8 @@ public class TestConfig implements CommandLineRunner {
 		
 		Tarefa t1 = new Tarefa(null,"Encontrar as Esferas do Dragão",TarefaStatus.EM_ANDAMENTO , u1);
 		Tarefa t2 = new Tarefa(null,"Treinar com Mestre Kame",TarefaStatus.EM_ANDAMENTO , u3);
-		Tarefa t3 = new Tarefa(null,"Combate",TarefaStatus.EM_ANDAMENTO , u2);
-		Tarefa t4 = new Tarefa(null, "Treinar para o Torneio do Poder", null, null);
+		Tarefa t3 = new Tarefa(null,"Combate",TarefaStatus.PENDENTE , u2);
+		Tarefa t4 = new Tarefa(null, "Treinar para o Torneio do Poder", TarefaStatus.EM_ANDAMENTO, u2);
 		Tarefa t5 = new Tarefa(null, "Proteger a Terra das ameaças de Freeza", null, null);
 		Tarefa t6 = new Tarefa(null, "Encontrar as Dragon Balls para ressuscitar os amigos mortos", null, null);
 		

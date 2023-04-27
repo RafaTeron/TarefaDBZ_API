@@ -29,6 +29,7 @@ public class Usuario implements Serializable {
 	private String raca;
 	
 	@OneToMany(mappedBy = "usuario")
+	
 	public List<Tarefa> tarefa = new ArrayList<>();
 
 	public Usuario() {

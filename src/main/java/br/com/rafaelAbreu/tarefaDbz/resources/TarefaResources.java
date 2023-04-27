@@ -3,6 +3,7 @@ package br.com.rafaelAbreu.tarefaDbz.resources;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,6 +52,14 @@ public class TarefaResources {
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		tarefaService.deleteById(id);
 		return ResponseEntity.noContent().build();
+	}
+	
+	@GetMapping("/listaTarefasDisponiveis")
+	public ResponseEntity<List<String>> listarTarefasDisponiveis() {
+	    List<String> nomesTarefasDisponiveis = tarefaService.tarefasDisponiveis();
+	    return ResponseEntity.ok()
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .body(nomesTarefasDisponiveis);
 	}
 
 }
