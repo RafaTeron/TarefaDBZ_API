@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
+import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 import br.com.rafaelAbreu.tarefaDbz.services.TarefaService;
 
 @RestController
@@ -23,6 +24,9 @@ public class TarefaResources {
 	
 	@Autowired
 	private TarefaService tarefaService;
+	
+	@Autowired
+	private TarefaRepository tarefaRepository;
 	
 	@GetMapping
 	public ResponseEntity<List<Tarefa>> findAll() {
@@ -58,6 +62,14 @@ public class TarefaResources {
 	public ResponseEntity<List<String>> listarTarefasDisponiveis() {
 	    List<String> nomesTarefasDisponiveis = tarefaService.tarefasDisponiveis();
 	    return ResponseEntity.ok()
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .body(nomesTarefasDisponiveis);
+	}
+	
+	@GetMapping(value = "/{id}/encontrarTarefasPorUsuario")
+	public ResponseEntity<List<Tarefa>> encontrarTarefasPorUsuario(@PathVariable Long id) {
+		List<Tarefa> nomesTarefasDisponiveis = tarefaRepository.encontrarTarefasPorUsuario(id);
+		return ResponseEntity.ok()
 	            .contentType(MediaType.APPLICATION_JSON)
 	            .body(nomesTarefasDisponiveis);
 	}

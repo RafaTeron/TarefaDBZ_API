@@ -3,6 +3,7 @@ package br.com.rafaelAbreu.tarefaDbz.resources;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
+import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
+import br.com.rafaelAbreu.tarefaDbz.services.TarefaService;
 import br.com.rafaelAbreu.tarefaDbz.services.UsuarioService;
 
 @RestController
@@ -21,6 +25,9 @@ public class UsuarioResources {
 	
 	@Autowired
 	private UsuarioService usuarioService;
+	
+	@Autowired
+	private TarefaService tarefaService;
 	
 	@GetMapping
 	public ResponseEntity<List<Usuario>> findAll() {
@@ -55,6 +62,14 @@ public class UsuarioResources {
 	        return ResponseEntity.badRequest().body(e.getMessage());
 	    }
     }
+	
+	@GetMapping("/{id}/tarefas/status/{status}")
+	public ResponseEntity<List<Tarefa>> buscarTarefasPorStatus(@PathVariable Long id, @PathVariable String status) {
+	   List<Tarefa> tarefas = tarefaService.encontrarTarefasPorStatus(id, TarefaStatus.valueOf(status.toUpperCase()));
+	   return ResponseEntity.ok()
+	            .contentType(MediaType.APPLICATION_JSON)
+	            .body(tarefas);
+	}
 }
 	
 

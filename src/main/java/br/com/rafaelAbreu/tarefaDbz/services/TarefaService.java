@@ -3,11 +3,13 @@ package br.com.rafaelAbreu.tarefaDbz.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
+import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 
 @Service
@@ -37,6 +39,7 @@ public class TarefaService {
 	
 	private void updateData(Tarefa entity, Tarefa obj) {
 		entity.setNome(obj.getNome());
+		entity.setStatus(obj.getStatus());
 	}
 	
 	public void deleteById(Long id) {
@@ -52,5 +55,12 @@ public class TarefaService {
 	    }
 	    return nomesTarefasDisponiveis;
 	}
-
+	
+	public List<Tarefa> encontrarTarefasPorStatus(Long id, TarefaStatus status) {
+	    List<Tarefa> tarefasDoUsuario = tarefaRepository.encontrarTarefasPorUsuario(id);
+	    List<Tarefa> tarefasFiltradas = tarefasDoUsuario.stream()
+	        .filter(t -> t.getStatus() == status)
+	        .collect(Collectors.toList());
+	    return tarefasFiltradas;
+	}
 }
