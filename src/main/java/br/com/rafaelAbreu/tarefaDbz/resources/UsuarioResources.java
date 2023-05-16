@@ -64,8 +64,8 @@ public class UsuarioResources {
     }
 	
 	@GetMapping("/{id}/tarefas/status/{status}")
-	public ResponseEntity<List<Tarefa>> buscarTarefasPorStatus(@PathVariable Long id, @PathVariable String status) {
-	   List<Tarefa> tarefas = tarefaService.encontrarTarefasPorStatus(id, TarefaStatus.valueOf(status.toUpperCase()));
+	public ResponseEntity<List<Tarefa>> filtrarTarefasPorStatus(@PathVariable Long id, @PathVariable String status) {
+	   List<Tarefa> tarefas = tarefaService.encontrarTarefasPorStatus(id ,TarefaStatus.valueOf(status.toUpperCase()));
 	   return ResponseEntity.ok()
 	            .contentType(MediaType.APPLICATION_JSON)
 	            .body(tarefas);

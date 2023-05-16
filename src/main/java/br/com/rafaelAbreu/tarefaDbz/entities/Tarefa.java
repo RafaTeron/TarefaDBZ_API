@@ -6,8 +6,9 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,8 +27,8 @@ public class Tarefa implements Serializable{
 	
 	private String nome;
 	
-	@Column(name = "status")
-	private String status;
+	@Enumerated(EnumType.STRING)
+	private TarefaStatus status;
 
 	@JsonIgnore
 	@ManyToOne
@@ -42,7 +43,7 @@ public class Tarefa implements Serializable{
 		super();
 		this.id = id;
 		this.nome = nome;
-		setStatus(status);
+		this.status = status;
 		this.usuario = usuario;
 	}
 
@@ -70,21 +71,18 @@ public class Tarefa implements Serializable{
 		this.usuario = usuario;
 	}
 
-	public TarefaStatus getStatus() {
-		return TarefaStatus.valueOfDescricao(status);
-	}
-
-	public void setStatus(TarefaStatus status) {
-		if(status != null) {
-		     this.status = status.getDescricao();
-		}
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(id);
+	}	
+
+	public TarefaStatus getStatus() {
+		return status;
 	}
-	
+
+	public void setStatus(TarefaStatus status) {
+		this.status = status;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
