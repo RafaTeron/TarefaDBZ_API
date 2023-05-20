@@ -1,14 +1,15 @@
 package br.com.rafaelAbreu.tarefaDbz.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
+import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 import br.com.rafaelAbreu.tarefaDbz.repositories.UsuarioRepository;
@@ -33,6 +34,10 @@ public class UsuarioService {
 
 	public Usuario insert(Usuario obj) {
 		return usuarioRepository.save(obj);
+	}
+	
+	public void deleteById(Long id) {
+		usuarioRepository.deleteById(id);
 	}
 
 	public Usuario update(Long id, Usuario obj) {
@@ -71,8 +76,7 @@ public class UsuarioService {
 				usuarioRepository.save(usuario);
 			} else {
 				List<Tarefa> tarefasDisponiveis = tarefaRepository.encontrarTarefasDisponiveis();
-				List<Tarefa> tarefasConcluidas = tarefaRepository.findAll().stream()
-						.filter(t -> t.getStatus() == TarefaStatus.CONCLUIDA).collect(Collectors.toList());
+				List<Tarefa> tarefasConcluidas = tarefaRepository.findByStatus(TarefaStatus.CONCLUIDA);
 				tarefasDisponiveis.addAll(tarefasConcluidas);
 
 				if (opcao > 0 && opcao <= tarefasDisponiveis.size()) {
@@ -112,6 +116,31 @@ public class UsuarioService {
 		} else {
 			throw new IllegalArgumentException("Usuário não encontrado!");
 		}
+	}
+	
+	public boolean verificarPermissaoTarefa(Long id , Usuario usuario , Nivel nivel) {
+		Map<Nivel, Integer> verificarNivel = usuario.getTarefasConcluidas();
+		List<Tarefa> tarefasConcluidas = tarefaRepository.findByStatus(TarefaStatus.CONCLUIDA);
+		int quantidadeTarefasConcluidas = tarefasConcluidas.size();
+		
+		verificarNivel.put(Nivel.FACIL, quantidadeTarefasConcluidas);
+		verificarNivel.put(Nivel.NORMAL, quantidadeTarefasConcluidas);
+		verificarNivel.put(Nivel.DIFICIL, quantidadeTarefasConcluidas);
+		verificarNivel.put(Nivel.DEUS, quantidadeTarefasConcluidas);
+		
+		if (verificarNivel.get(Nivel.FACIL) >= 3) {
+			if (verificarNivel.get(Nivel.NORMAL) >= 3) {
+				if (verificarNivel.get(Nivel.DIFICIL) >= 3) {
+					if (verificarNivel.get(Nivel.DEUS) >= 3) {
+					    return true;
+					}
+					return true;
+				}
+				return true;
+			}
+			return true;
+		}	
+	    return false;
 	}
 
 }

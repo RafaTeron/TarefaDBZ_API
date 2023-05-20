@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
+import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
 import br.com.rafaelAbreu.tarefaDbz.services.TarefaService;
 import br.com.rafaelAbreu.tarefaDbz.services.UsuarioService;
@@ -46,6 +48,12 @@ public class UsuarioResources {
 		Usuario obj = usuarioService.insert(pessoa);
 		return ResponseEntity.ok().body(obj);
 	}
+	
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		usuarioService.deleteById(id);
+		return ResponseEntity.noContent().build();
+	}
 
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<Usuario> update(@PathVariable Long id, @RequestBody Usuario obj) {
@@ -69,6 +77,15 @@ public class UsuarioResources {
 	   return ResponseEntity.ok()
 	            .contentType(MediaType.APPLICATION_JSON)
 	            .body(tarefas);
+	}
+	
+	@GetMapping("/{id}/verificar-permissao-tarefa")
+	public ResponseEntity<Integer> verificarPermissaoTarefaEndpoint(@PathVariable Long id, Nivel niveis) {
+	    Usuario usuario = usuarioService.findById(id);
+	    boolean permissao = usuarioService.verificarPermissaoTarefa(id, usuario, niveis);
+	    int nivel = permissao ? 4 : 0;
+
+	    return ResponseEntity.ok(nivel);
 	}
 }
 	

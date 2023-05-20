@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
+import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 
@@ -35,13 +36,22 @@ public class TarefaService {
 
 	public Tarefa update(Long id, Tarefa obj) {
 		Tarefa entity = tarefaRepository.getReferenceById(id);
-		updateData(entity, obj);
+		updateData(entity, obj);	
+		return tarefaRepository.save(entity);
+	}
+	
+	public Tarefa updateStatus(Long id, Tarefa entity ,Tarefa obj) {		
+		entity = tarefaRepository.getReferenceById(id);
+		entity.setStatus(obj.getStatus());
+		if (obj.getStatus() == TarefaStatus.CONCLUIDA && entity.getUsuario() != null) {
+	        Nivel nivel = entity.getNivel();
+	        entity.getUsuario().incrementarTarefaConcluida(nivel);
+	    }
 		return tarefaRepository.save(entity);
 	}
 
 	private void updateData(Tarefa entity, Tarefa obj) {
-		entity.setNome(obj.getNome());
-		entity.setStatus(obj.getStatus());
+		entity.setNome(obj.getNome());				
 	}
 
 	public void deleteById(Long id) {

@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +15,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
@@ -29,22 +32,37 @@ public class Tarefa implements Serializable{
 	
 	@Enumerated(EnumType.STRING)
 	private TarefaStatus status;
+	
+	@Enumerated(EnumType.STRING)
+	private Nivel nivel;
 
 	@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "usuario_id")
 	private Usuario usuario;
 	
+	
+	@PrePersist
+	@PreUpdate
+	private void updateTarefasConcluidas() {
+	    if (status == TarefaStatus.CONCLUIDA && usuario != null) {
+	    	 if (status != TarefaStatus.CONCLUIDA) {
+	             usuario.incrementarTarefaConcluida(nivel);
+	         }
+	     }
+	}
+	
 	public Tarefa() {
 
 	}
 	
-	public Tarefa(Long id, String nome, TarefaStatus status, Usuario usuario) {
+	public Tarefa(Long id, String nome, TarefaStatus status, Nivel nivel, Usuario usuario) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.status = status;
 		this.usuario = usuario;
+		this.nivel = nivel;
 	}
 
 	public Long getId() {
@@ -82,6 +100,14 @@ public class Tarefa implements Serializable{
 
 	public void setStatus(TarefaStatus status) {
 		this.status = status;
+	}
+
+	public Nivel getNivel() {
+		return nivel;
+	}
+
+	public void setNivel(Nivel nivel) {
+		this.nivel = nivel;
 	}
 
 	@Override

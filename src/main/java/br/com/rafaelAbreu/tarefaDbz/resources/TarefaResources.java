@@ -52,6 +52,17 @@ public class TarefaResources {
 		return ResponseEntity.ok().body(obj);
 	}
 	
+	@PutMapping("/{id}/status")
+    public ResponseEntity<Tarefa> updateStatus(@PathVariable Long id, @RequestBody Tarefa updatedTarefa) {
+        Tarefa existingTarefa = tarefaService.findById(id);
+        if (existingTarefa == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Tarefa updatedTarefaStatus = tarefaService.updateStatus(id, existingTarefa, updatedTarefa);
+        return ResponseEntity.ok(updatedTarefaStatus);
+    }
+	
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		tarefaService.deleteById(id);
