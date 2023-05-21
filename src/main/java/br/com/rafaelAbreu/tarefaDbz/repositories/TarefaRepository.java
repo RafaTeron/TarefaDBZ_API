@@ -24,9 +24,6 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
 	@Query("SELECT t FROM Tarefa t WHERE t.status = :status")
 	List<Tarefa> findByStatus(@Param("status") TarefaStatus status);
 	
-	@Query("SELECT t.status FROM Tarefa t WHERE t.id = :id")
-    TarefaStatus getStatusById(@Param("id") Long id);
-	
 	@Query("SELECT t FROM Tarefa t WHERE t.status = :status AND t.nivel = :nivel")
     List<Tarefa> findByStatusAndNivel(@Param("status") TarefaStatus status, @Param("nivel") Nivel nivel);
 

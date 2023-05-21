@@ -35,7 +35,7 @@ public class UsuarioService {
 	public Usuario insert(Usuario obj) {
 		return usuarioRepository.save(obj);
 	}
-	
+
 	public void deleteById(Long id) {
 		usuarioRepository.deleteById(id);
 	}
@@ -53,10 +53,9 @@ public class UsuarioService {
 	}
 
 	private boolean verificarTarefaEmAndamentoOuPendente(Tarefa tarefa, Usuario usuario) {
-		boolean tarefaEmAndamento = usuario.getTarefa().stream()
-		        .filter(t -> t.getNome().equals(tarefa.getNome()))
-		        .allMatch(t -> t.getStatus() == TarefaStatus.EM_ANDAMENTO || t.getStatus() == TarefaStatus.PENDENTE);
-	    return tarefaEmAndamento;
+		boolean tarefaEmAndamento = usuario.getTarefa().stream().filter(t -> t.getNome().equals(tarefa.getNome()))
+				.allMatch(t -> t.getStatus() == TarefaStatus.EM_ANDAMENTO || t.getStatus() == TarefaStatus.PENDENTE);
+		return tarefaEmAndamento;
 	}
 
 	public void adicionarTarefa(Long id, int opcao) {
@@ -82,7 +81,7 @@ public class UsuarioService {
 				if (opcao > 0 && opcao <= tarefasDisponiveis.size()) {
 					Tarefa tarefaEscolhida = tarefasDisponiveis.get(opcao - 1);
 					if (tarefaEscolhida.getStatus() == TarefaStatus.CONCLUIDA) {
-						if (verificarTarefaEmAndamentoOuPendente(tarefaEscolhida,usuario)) {
+						if (verificarTarefaEmAndamentoOuPendente(tarefaEscolhida, usuario)) {
 							Tarefa copiaTarefa = new Tarefa();
 							copiaTarefa.setNome(tarefaEscolhida.getNome());
 							copiaTarefa.setStatus(TarefaStatus.EM_ANDAMENTO);
@@ -90,7 +89,8 @@ public class UsuarioService {
 							tarefaRepository.save(copiaTarefa);
 							tarefas.add(copiaTarefa);
 						} else {
-							throw new IllegalArgumentException("A tarefa selecionada está em andamento ou pendente para outro usuário.");
+							throw new IllegalArgumentException(
+									"A tarefa selecionada está em andamento ou pendente para outro usuário.");
 						}
 					} else {
 						tarefas.add(tarefaEscolhida);
@@ -117,30 +117,28 @@ public class UsuarioService {
 			throw new IllegalArgumentException("Usuário não encontrado!");
 		}
 	}
-	
-	public boolean verificarPermissaoTarefa(Long id , Usuario usuario , Nivel nivel) {
-		Map<Nivel, Integer> verificarNivel = usuario.getTarefasConcluidas();
-		List<Tarefa> tarefasConcluidas = tarefaRepository.findByStatus(TarefaStatus.CONCLUIDA);
-		int quantidadeTarefasConcluidas = tarefasConcluidas.size();
-		
-		verificarNivel.put(Nivel.FACIL, quantidadeTarefasConcluidas);
-		verificarNivel.put(Nivel.NORMAL, quantidadeTarefasConcluidas);
-		verificarNivel.put(Nivel.DIFICIL, quantidadeTarefasConcluidas);
-		verificarNivel.put(Nivel.DEUS, quantidadeTarefasConcluidas);
-		
-		if (verificarNivel.get(Nivel.FACIL) >= 3) {
-			if (verificarNivel.get(Nivel.NORMAL) >= 3) {
-				if (verificarNivel.get(Nivel.DIFICIL) >= 3) {
-					if (verificarNivel.get(Nivel.DEUS) >= 3) {
-					    return true;
-					}
-					return true;
-				}
-				return true;
-			}
-			return true;
-		}	
-	    return false;
+
+	public String verificarPermissaoTarefa(Long id) {
+		Optional<Usuario> usuario = usuarioRepository.findById(id);
+		Map<Nivel, Integer> verificarNivel = usuario.get().getTarefasConcluidas();
+
+		String nivelString = null;
+
+		if (verificarNivel.getOrDefault(Nivel.NORMAL, 0) >= 3) {
+	        nivelString = "DIFICIL";
+	    } else if (verificarNivel.getOrDefault(Nivel.FACIL, 0) >= 3) {
+	        nivelString = "NORMAL";
+	    } else if (verificarNivel.getOrDefault(Nivel.DIFICIL, 0) >= 3) {
+	        nivelString = "MUITO_DIFICIL";
+	    } else if (verificarNivel.getOrDefault(Nivel.MUITO_DIFICIL, 0) >= 3) {
+	        nivelString = "DEUS";
+	    } else if (verificarNivel.getOrDefault(Nivel.FACIL, 0) < 3) {
+	        nivelString = "FACIL";
+	    } else {
+	        nivelString = "SEM_PERMISSAO";
+	    }
+	    return nivelString;
+
 	}
 
 }

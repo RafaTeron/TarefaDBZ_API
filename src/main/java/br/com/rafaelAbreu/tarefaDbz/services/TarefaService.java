@@ -64,6 +64,7 @@ public class TarefaService {
 
 	    List<String> nomesTarefasDisponiveis = new ArrayList<>();
 
+	    
 	    tarefasDisponiveis.addAll(tarefasConcluidas);
 
 	    Set<String> nomesTarefasSet = new HashSet<>();
@@ -71,7 +72,8 @@ public class TarefaService {
 	    for (int i = 0; i < tarefasDisponiveis.size(); i++) {
 	        Tarefa tarefaDisponivel = tarefasDisponiveis.get(i);
 	        String nomeTarefaDisponivel = tarefaDisponivel.getNome();
-
+	        String nivelTarefaDisponivel = tarefaDisponivel.getNivel().toString();
+	        
 	        boolean tarefaComMesmoNomeEncontrada = false;
 	        for (Tarefa tarefa : tarefaRepository.findAll()) {
 	            if (tarefa.getStatus() != null && !tarefa.getStatus().equals(TarefaStatus.CONCLUIDA)
@@ -83,7 +85,7 @@ public class TarefaService {
 
 	        if (!tarefaComMesmoNomeEncontrada && !nomesTarefasSet.contains(nomeTarefaDisponivel)) {
 	            nomesTarefasSet.add(nomeTarefaDisponivel);
-	            nomesTarefasDisponiveis.add((i + 1) + ". " + nomeTarefaDisponivel);
+	            nomesTarefasDisponiveis.add((i + 1) + ". " + nomeTarefaDisponivel + "  (" + nivelTarefaDisponivel + ")");
 	        }
 	    }
 

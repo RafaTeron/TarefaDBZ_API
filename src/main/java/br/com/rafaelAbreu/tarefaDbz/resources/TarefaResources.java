@@ -41,8 +41,8 @@ public class TarefaResources {
 	}
 
 	@PostMapping
-	public ResponseEntity<Tarefa> insert(@RequestBody Tarefa pessoa) {
-		Tarefa obj = tarefaService.insert(pessoa);
+	public ResponseEntity<Tarefa> insert(@RequestBody Tarefa objTarefa) {
+		Tarefa obj = tarefaService.insert(objTarefa);
 		return ResponseEntity.ok().body(obj);
 	}
 

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
-import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
+
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
 import br.com.rafaelAbreu.tarefaDbz.services.TarefaService;
 import br.com.rafaelAbreu.tarefaDbz.services.UsuarioService;
@@ -79,14 +79,11 @@ public class UsuarioResources {
 	            .body(tarefas);
 	}
 	
-	@GetMapping("/{id}/verificar-permissao-tarefa")
-	public ResponseEntity<Integer> verificarPermissaoTarefaEndpoint(@PathVariable Long id, Nivel niveis) {
-	    Usuario usuario = usuarioService.findById(id);
-	    boolean permissao = usuarioService.verificarPermissaoTarefa(id, usuario, niveis);
-	    int nivel = permissao ? 4 : 0;
-
-	    return ResponseEntity.ok(nivel);
-	}
+	@GetMapping("/{id}/nivel-permissao")
+    public ResponseEntity<String> getNivelPermissao(@PathVariable Long id) {
+        String nivelString = usuarioService.verificarPermissaoTarefa(id);
+        return ResponseEntity.ok(nivelString);
+    }
 }
 	
 
