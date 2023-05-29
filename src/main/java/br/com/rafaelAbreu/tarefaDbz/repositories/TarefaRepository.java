@@ -26,5 +26,8 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
 	
 	@Query("SELECT t FROM Tarefa t WHERE t.status = :status AND t.nivel = :nivel")
     List<Tarefa> findByStatusAndNivel(@Param("status") TarefaStatus status, @Param("nivel") Nivel nivel);
+	
+	@Query(value = "SELECT * FROM tb_tarefa WHERE nivel = 'FACIL' ORDER BY RANDOM() LIMIT 1", nativeQuery = true)
+    Tarefa TarefaAleatoriaFacil();
 
 }
