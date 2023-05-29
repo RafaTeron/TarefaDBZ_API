@@ -1,6 +1,7 @@
 package br.com.rafaelAbreu.tarefaDbz.services;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -57,13 +58,12 @@ public class TarefaService {
 	public void deleteById(Long id) {
 		tarefaRepository.deleteById(id);
 	}
-
+	
 	public List<String> tarefasDisponiveis() {
 	    List<Tarefa> tarefasDisponiveis = tarefaRepository.encontrarTarefasDisponiveis();
 	    List<Tarefa> tarefasConcluidas = tarefaRepository.findByStatus(TarefaStatus.CONCLUIDA);
 
 	    List<String> nomesTarefasDisponiveis = new ArrayList<>();
-
 	    
 	    tarefasDisponiveis.addAll(tarefasConcluidas);
 
@@ -89,7 +89,14 @@ public class TarefaService {
 	        }
 	    }
 
-	    return nomesTarefasDisponiveis;
+	    List<String> nomesTarefasDisponiveisOrdenadas = nomesTarefasDisponiveis.stream()
+	        .sorted(Comparator.comparing(tarefa -> {
+	            String nivel = tarefa.substring(tarefa.lastIndexOf("(") + 1, tarefa.lastIndexOf(")")).trim();
+	            return Nivel.valueOf(nivel.toUpperCase()).ordinal();
+	        }))
+	        .collect(Collectors.toList());
+
+	    return nomesTarefasDisponiveisOrdenadas;
 	}
 	
 
