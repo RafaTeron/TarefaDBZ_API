@@ -164,7 +164,7 @@ public class UsuarioService {
 		}
 	}
 
-	public String verificarPermissaoTaref(Long id) {
+	public String nivelUsuario(Long id) {
 		Optional<Usuario> usuario = usuarioRepository.findById(id);
 		Map<Nivel, Integer> verificarNivel = usuario.get().getTarefasConcluidas();
 

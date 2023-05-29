@@ -80,8 +80,8 @@ public class UsuarioResources {
 	}
 	
 	@GetMapping("/{id}/nivel-permissao")
-    public ResponseEntity<String> getNivelPermissao(@PathVariable Long id) {
-        String nivelString = usuarioService.verificarPermissaoTaref(id);
+    public ResponseEntity<String> nivelUsuario(@PathVariable Long id) {
+        String nivelString = usuarioService.nivelUsuario(id);
         return ResponseEntity.ok(nivelString);
     }
 }
