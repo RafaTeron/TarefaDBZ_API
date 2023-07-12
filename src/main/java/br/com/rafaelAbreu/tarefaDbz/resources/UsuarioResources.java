@@ -18,6 +18,9 @@ import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.ErroTarefaException;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.ErroUsuarioException;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.SemUsuarioException;
 import br.com.rafaelAbreu.tarefaDbz.services.TarefaService;
 import br.com.rafaelAbreu.tarefaDbz.services.UsuarioService;
 
@@ -66,7 +69,7 @@ public class UsuarioResources {
 		try {
 	        usuarioService.adicionarTarefa(id, opcao);
 	        return ResponseEntity.ok("Tarefa adicionada com sucesso!");
-	    } catch (IllegalArgumentException e) {
+	    } catch (SemUsuarioException | ErroTarefaException | ErroUsuarioException e) {
 	        return ResponseEntity.badRequest().body(e.getMessage());
 	    }
     }

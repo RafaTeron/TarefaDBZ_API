@@ -11,6 +11,9 @@ import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.ErroTarefaException;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.ErroUsuarioException;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.SemUsuarioException;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 import br.com.rafaelAbreu.tarefaDbz.repositories.UsuarioRepository;
 
@@ -52,7 +55,7 @@ public class UsuarioService {
 		entity.setSenha(obj.getSenha());
 	}	
 
-	public void adicionarTarefa(Long id, int opcao) {
+	public void adicionarTarefa(Long id, int opcao) throws  SemUsuarioException, ErroTarefaException, ErroUsuarioException {
 	    Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
 
 	    if (usuarioOpt.isPresent()) {
@@ -62,10 +65,10 @@ public class UsuarioService {
 	        if (tarefas.isEmpty()) {
 	            adicionarPrimeiraTarefa(usuario, tarefas);
 	        } else {
-	            adicionarTarefaExistente(usuario, tarefas, opcao);
+	            adicionarNovaTarefa(usuario, tarefas, opcao);
 	        }
 	    } else {
-	        throw new IllegalArgumentException("Usuário não encontrado!");
+	        throw new SemUsuarioException("Usuário não encontrado!");
 	    }
 	}
 
@@ -81,7 +84,7 @@ public class UsuarioService {
 	    }
 	}
 
-	private void adicionarTarefaExistente(Usuario usuario, List<Tarefa> tarefas, int opcao) {
+	private void adicionarNovaTarefa(Usuario usuario, List<Tarefa> tarefas, int opcao) throws ErroTarefaException, ErroUsuarioException {
 	    List<Tarefa> tarefasDisponiveis = tarefaRepository.encontrarTarefasDisponiveis();
 	    List<Tarefa> tarefasConcluidas = tarefaRepository.findByStatus(TarefaStatus.CONCLUIDA);
 	    tarefasDisponiveis.addAll(tarefasConcluidas);
@@ -95,18 +98,18 @@ public class UsuarioService {
 	                if (verificarTarefaEmAndamentoOuPendente(tarefaEscolhida, usuario)) {
 	                    criarCopiaTarefa(usuario, tarefas, tarefaEscolhida);
 	                } else {
-	                    throw new IllegalArgumentException("A tarefa selecionada está em andamento ou pendente para outro usuário.");
+	                    throw new ErroTarefaException("A tarefa selecionada está em andamento ou pendente para outro usuário.");
 	                }
 	            } else {
 	                adicionarTarefa(usuario, tarefas, tarefaEscolhida);
 	            }
 	        } else {
-	            throw new IllegalArgumentException("Nível do usuário insuficiente.");
+	            throw new ErroUsuarioException("Nível do usuário insuficiente.");
 	        }
 
 	        marcarTarefasAnterioresComoPendentes(tarefas);
 	    } else {
-	        throw new IllegalArgumentException("Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível.");
+	        throw new ErroTarefaException("Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível.");
 	    }
 	}
 	

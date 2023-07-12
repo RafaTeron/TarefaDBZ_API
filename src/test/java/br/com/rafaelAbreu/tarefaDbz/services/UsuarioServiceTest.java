@@ -32,39 +32,62 @@ public class UsuarioServiceTest {
 	}
 
 	@Test
-	public void encontrarTodosOsUsuarios() throws Exception{
-		//cenario
-		Usuario usuario1 = UsuarioBuilder.umUsuario().agora();
-	    Usuario usuario2 = UsuarioBuilder.umUsuario().agora();
-        List<Usuario> usuarios = Arrays.asList(usuario1, usuario2);
-        Mockito.when(usuarioRepository.findAll()).thenReturn(usuarios);
-		
-        //açao
+	public void encontrarTodosOsUsuarios() throws Exception {
+		// cenario
+		List<Usuario> usuarios = Arrays.asList(
+	            UsuarioBuilder.umUsuario().agora(),
+	            UsuarioBuilder.umUsuario().agora(),
+	            UsuarioBuilder.umUsuario().agora()
+	    );
+	    Mockito.when(usuarioRepository.findAll()).thenReturn(usuarios);
+
+		// açao
 		List<Usuario> resultado = usuarioService.findAll();
-		
-		//verificaçao
-		Assertions.assertEquals(2, resultado.size());
-		Assertions.assertEquals(usuario1, resultado.get(0));
-		Assertions.assertEquals(usuario2, resultado.get(1));
-		
-		Mockito.verify(usuarioRepository, Mockito.times(1)).findAll();
-		Mockito.verifyNoMoreInteractions(usuarioRepository);
+
+		// verificaçao
+		Assertions.assertEquals(usuarios, resultado);
+	    Mockito.verify(usuarioRepository, Mockito.times(1)).findAll();
 	}
-	
+
 	@Test
-	public void encontrarUsuariosPorId() throws Exception{
-		//cenario
-		 Long idUsuario = 1L;
-		 Usuario usuario = UsuarioBuilder.umUsuario().comId(idUsuario).agora();
-		 Mockito.when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuario));
-		
-		//açao
-		Optional <Usuario> resultado = Optional.of(usuarioService.findById(idUsuario));
-		
-		//verificaçao
-		Assertions.assertTrue(resultado.isPresent());
-		Assertions.assertEquals(usuario, resultado.get());
-	    Mockito.verify(usuarioRepository, Mockito.times(1)).findById(idUsuario);
+	public void encontrarUsuariosPorId() throws Exception {
+		// cenario
+		Long id = 1L;
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		Mockito.when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
+
+		// açao
+		Usuario resultado = usuarioService.findById(id);
+
+		// verificaçao
+		Assertions.assertEquals(usuario, resultado);
+		Mockito.verify(usuarioRepository, Mockito.times(1)).findById(id);
 	}
-	
+
+	@Test
+	public void insertUsuario() throws Exception {
+		// cenario
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		Usuario usuario2 = UsuarioBuilder.umUsuario().agora();
+		Mockito.when(usuarioRepository.save(usuario)).thenReturn(usuario2);
+
+		// açao
+		Usuario resultado = usuarioService.insert(usuario);
+		// verificaçao
+		Assertions.assertSame(usuario2, resultado);
+		Mockito.verify(usuarioRepository, Mockito.times(1)).save(usuario);
+	}
+
+	@Test
+	public void deletarUsuariosPorId() throws Exception {
+		// cenario
+	    Long id = 1L;
+
+	    // açao
+	    usuarioService.deleteById(id);
+
+	    // Verificação
+	    Mockito.verify(usuarioRepository, Mockito.times(1)).deleteById(id);
+	}
+
 }
