@@ -35,13 +35,13 @@ public class Usuario implements Serializable {
 	
 	private String raca;
 	
+	@OneToMany(mappedBy = "usuario")	
+	public List<Tarefa> tarefa = new ArrayList<>();
+	
 	@ElementCollection
     @CollectionTable(name = "usuario_tarefas_concluidas", joinColumns = @jakarta.persistence.JoinColumn(name = "usuario_id"))
     @MapKeyEnumerated(EnumType.STRING)
 	private Map<Nivel, Integer> tarefasConcluidas;
-	
-	@OneToMany(mappedBy = "usuario")	
-	public List<Tarefa> tarefa = new ArrayList<>();
 
 	public void incrementarTarefaConcluida(Nivel nivel) {
 	    Map<Nivel, Integer> tarefasConcluidas = getTarefasConcluidas();
@@ -63,6 +63,10 @@ public class Usuario implements Serializable {
         for (Nivel nivel : Nivel.values()) {
             this.tarefasConcluidas.put(nivel, 0);
         }
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public Long getId() {
@@ -119,7 +123,7 @@ public class Usuario implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(id, nome);
 	}
 
 	@Override
@@ -131,7 +135,9 @@ public class Usuario implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Usuario other = (Usuario) obj;
-		return Objects.equals(id, other.id);
+		return Objects.equals(id, other.id) && Objects.equals(nome, other.nome);
 	}
+
+	
 
 }

@@ -50,99 +50,102 @@ public class UsuarioService {
 		entity.setNome(obj.getNome());
 		entity.setEmail(obj.getEmail());
 		entity.setSenha(obj.getSenha());
+	}	
+
+	public void adicionarTarefa(Long id, int opcao) {
+	    Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+
+	    if (usuarioOpt.isPresent()) {
+	        Usuario usuario = usuarioOpt.get();
+	        List<Tarefa> tarefas = usuario.getTarefa();
+
+	        if (tarefas.isEmpty()) {
+	            adicionarPrimeiraTarefa(usuario, tarefas);
+	        } else {
+	            adicionarTarefaExistente(usuario, tarefas, opcao);
+	        }
+	    } else {
+	        throw new IllegalArgumentException("Usuário não encontrado!");
+	    }
 	}
 
+	private void adicionarPrimeiraTarefa(Usuario usuario, List<Tarefa> tarefas) {
+	    Tarefa tarefaAleatoria = tarefaRepository.TarefaAleatoriaFacil();
+
+	    if (tarefaAleatoria.getStatus() == TarefaStatus.CONCLUIDA) {
+	        if (verificarTarefaEmAndamentoOuPendente(tarefaAleatoria, usuario)) {
+	            criarCopiaTarefa(usuario, tarefas, tarefaAleatoria);
+	        }
+	    } else {
+	        adicionarTarefa(usuario, tarefas, tarefaAleatoria);
+	    }
+	}
+
+	private void adicionarTarefaExistente(Usuario usuario, List<Tarefa> tarefas, int opcao) {
+	    List<Tarefa> tarefasDisponiveis = tarefaRepository.encontrarTarefasDisponiveis();
+	    List<Tarefa> tarefasConcluidas = tarefaRepository.findByStatus(TarefaStatus.CONCLUIDA);
+	    tarefasDisponiveis.addAll(tarefasConcluidas);
+
+	    if (opcao > 0 && opcao <= tarefasDisponiveis.size()) {
+	        Tarefa tarefaEscolhida = tarefasDisponiveis.get(opcao - 1);
+	        Nivel nivelPermitido = verificarPermissaoTarefa(usuario.getId());
+
+	        if (nivelPermitido != null && nivelPermitido.compareTo(tarefaEscolhida.getNivel()) >= 0) {
+	            if (tarefaEscolhida.getStatus() == TarefaStatus.CONCLUIDA) {
+	                if (verificarTarefaEmAndamentoOuPendente(tarefaEscolhida, usuario)) {
+	                    criarCopiaTarefa(usuario, tarefas, tarefaEscolhida);
+	                } else {
+	                    throw new IllegalArgumentException("A tarefa selecionada está em andamento ou pendente para outro usuário.");
+	                }
+	            } else {
+	                adicionarTarefa(usuario, tarefas, tarefaEscolhida);
+	            }
+	        } else {
+	            throw new IllegalArgumentException("Nível do usuário insuficiente.");
+	        }
+
+	        marcarTarefasAnterioresComoPendentes(tarefas);
+	    } else {
+	        throw new IllegalArgumentException("Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível.");
+	    }
+	}
+	
+	
+	private void criarCopiaTarefa(Usuario usuario, List<Tarefa> tarefas, Tarefa tarefaOriginal) {
+	    Tarefa copiaTarefa = new Tarefa();
+	    copiaTarefa.setNivel(tarefaOriginal.getNivel());
+	    copiaTarefa.setNome(tarefaOriginal.getNome());
+	    copiaTarefa.setStatus(TarefaStatus.EM_ANDAMENTO);
+	    copiaTarefa.setUsuario(usuario);
+	    tarefaRepository.save(copiaTarefa);
+	    tarefas.add(copiaTarefa);
+	}
+
+	private void adicionarTarefa(Usuario usuario, List<Tarefa> tarefas, Tarefa tarefa) {
+	    tarefas.add(tarefa);
+	    tarefa.setStatus(TarefaStatus.EM_ANDAMENTO);
+	    tarefa.setUsuario(usuario);
+	    tarefaRepository.save(tarefa);
+	    usuario.setTarefa(tarefas);
+	    usuarioRepository.save(usuario);
+	}
+
+	private void marcarTarefasAnterioresComoPendentes(List<Tarefa> tarefas) {
+	    if (tarefas.size() > 1) {
+	        for (int i = tarefas.size() - 2; i >= 0; i--) {
+	            Tarefa tarefaAnterior = tarefas.get(i);
+	            if (tarefaAnterior.getStatus() != TarefaStatus.CONCLUIDA) {
+	                tarefaAnterior.setStatus(TarefaStatus.PENDENTE);
+	                tarefaRepository.save(tarefaAnterior);
+	            }
+	        }
+	    }
+	}
+	
 	private boolean verificarTarefaEmAndamentoOuPendente(Tarefa tarefa, Usuario usuario) {
 		boolean tarefaEmAndamento = usuario.getTarefa().stream().filter(t -> t.getNome().equals(tarefa.getNome()))
 				.allMatch(t -> t.getStatus() == TarefaStatus.EM_ANDAMENTO || t.getStatus() == TarefaStatus.PENDENTE);
 		return tarefaEmAndamento;
-	}
-
-	public void adicionarTarefa(Long id, int opcao) {
-		Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
-
-		if (usuarioOpt.isPresent()) {
-			Usuario usuario = usuarioOpt.get();
-			List<Tarefa> tarefas = usuario.getTarefa();
-
-			if (tarefas.isEmpty()) {
-				Tarefa tarefaAleatoria = tarefaRepository.TarefaAleatoriaFacil();
-				if (tarefaAleatoria.getStatus() == TarefaStatus.CONCLUIDA) {
-
-					if (verificarTarefaEmAndamentoOuPendente(tarefaAleatoria, usuario)) {
-						Tarefa copiaTarefa = new Tarefa();
-						copiaTarefa.setNivel(tarefaAleatoria.getNivel());
-						copiaTarefa.setNome(tarefaAleatoria.getNome());
-						copiaTarefa.setStatus(TarefaStatus.EM_ANDAMENTO);
-						copiaTarefa.setUsuario(usuario);
-						tarefaRepository.save(copiaTarefa);
-						tarefas.add(copiaTarefa);
-					}
-				} else {
-					tarefas.add(tarefaAleatoria);
-					tarefaAleatoria.setStatus(TarefaStatus.EM_ANDAMENTO);
-					tarefaAleatoria.setUsuario(usuario);
-					tarefaRepository.save(tarefaAleatoria);
-					usuario.setTarefa(tarefas);
-					usuarioRepository.save(usuario);
-				}
-			} else {
-				List<Tarefa> tarefasDisponiveis = tarefaRepository.encontrarTarefasDisponiveis();
-				List<Tarefa> tarefasConcluidas = tarefaRepository.findByStatus(TarefaStatus.CONCLUIDA);
-				tarefasDisponiveis.addAll(tarefasConcluidas);
-
-				if (opcao > 0 && opcao <= tarefasDisponiveis.size()) {
-					Tarefa tarefaEscolhida = tarefasDisponiveis.get(opcao - 1);
-
-					Nivel nivelPermitido = verificarPermissaoTarefa(id);
-
-					if (nivelPermitido != null && nivelPermitido.compareTo(tarefaEscolhida.getNivel()) >= 0) {
-
-						if (tarefaEscolhida.getStatus() == TarefaStatus.CONCLUIDA) {
-
-							if (verificarTarefaEmAndamentoOuPendente(tarefaEscolhida, usuario)) {
-								Tarefa copiaTarefa = new Tarefa();
-								copiaTarefa.setNivel(tarefaEscolhida.getNivel());
-								copiaTarefa.setNome(tarefaEscolhida.getNome());
-								copiaTarefa.setStatus(TarefaStatus.EM_ANDAMENTO);
-								copiaTarefa.setUsuario(usuario);
-								tarefaRepository.save(copiaTarefa);
-								tarefas.add(copiaTarefa);
-							} else {
-								throw new IllegalArgumentException(
-										"A tarefa selecionada está em andamento ou pendente para outro usuário.");
-							}
-						} else {
-							tarefas.add(tarefaEscolhida);
-							tarefaEscolhida.setStatus(TarefaStatus.EM_ANDAMENTO);
-							tarefaEscolhida.setUsuario(usuario);
-							tarefaRepository.save(tarefaEscolhida);
-							usuario.setTarefa(tarefas);
-							usuarioRepository.save(usuario);
-						}
-					} else {
-						throw new IllegalArgumentException("Nivel do usuario insuficiente");
-					}
-
-					if (tarefas.size() > 1) {
-						for (int i = tarefas.size() - 2; i >= 0; i--) {
-						    Tarefa tarefaAnterior = tarefas.get(i);
-						    if (tarefaAnterior.getStatus() != TarefaStatus.CONCLUIDA) {
-						        tarefaAnterior.setStatus(TarefaStatus.PENDENTE);
-						        tarefaRepository.save(tarefaAnterior);
-						    }
-						}
-					}
-
-				} else {
-					throw new IllegalArgumentException(
-							"Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível.");
-				}
-			}
-
-		} else {
-			throw new IllegalArgumentException("Usuário não encontrado!");
-		}
 	}
 
 	public Nivel verificarPermissaoTarefa(Long id) {
@@ -185,5 +188,4 @@ public class UsuarioService {
 		}
 		return nivelString;
 	}
-
 }
