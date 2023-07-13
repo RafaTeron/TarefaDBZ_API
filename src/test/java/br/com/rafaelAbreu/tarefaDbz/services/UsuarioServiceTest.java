@@ -90,4 +90,38 @@ public class UsuarioServiceTest {
 	    Mockito.verify(usuarioRepository, Mockito.times(1)).deleteById(id);
 	}
 
+	@Test
+	public void update() throws Exception {
+		//cenario
+		Long id = 1L;
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+        Usuario entity = Mockito.mock(Usuario.class);
+        
+        Mockito.when(usuarioRepository.getReferenceById(id)).thenReturn(entity);
+        Mockito.when(usuarioRepository.save(entity)).thenReturn(entity);
+        
+        //açao
+        Usuario resultado = usuarioService.update(id, usuario);
+
+        //Verificação 
+        Mockito.verify(usuarioRepository).getReferenceById(id);
+        Mockito.verify(usuarioService).updateData(entity,usuario);
+        Mockito.verify(usuarioRepository).save(entity);
+        Assertions.assertEquals(entity, resultado);
+	}
+	
+	@Test
+    public void updateData() {
+		//cenario
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+        Usuario entity = Mockito.mock(Usuario.class);
+        
+        //açao
+        usuarioService.updateData(entity, usuario);        
+
+        //verificaçao
+        Mockito.verify(entity).setNome(usuario.getNome());
+        Mockito.verify(entity).setEmail(usuario.getEmail());
+        Mockito.verify(entity).setSenha(usuario.getSenha());
+	}
 }

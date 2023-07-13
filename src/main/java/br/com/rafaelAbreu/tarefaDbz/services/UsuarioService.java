@@ -49,7 +49,7 @@ public class UsuarioService {
 		return usuarioRepository.save(entity);
 	}
 
-	private void updateData(Usuario entity, Usuario obj) {
+	protected void updateData(Usuario entity, Usuario obj) {
 		entity.setNome(obj.getNome());
 		entity.setEmail(obj.getEmail());
 		entity.setSenha(obj.getSenha());
