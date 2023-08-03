@@ -3,8 +3,10 @@ package br.com.rafaelAbreu.tarefaDbz.services;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -162,7 +164,29 @@ public class TarefaServiceTest {
 	}
 	
 	@Test
-	public void updateStatus_StatusNotConcluded_NoIncrement() {
+	public void updateStatus_StatusDiferenteDeCONCLUIDA() {
+	    // Cenário
+	    Long id = 1L;
+	    Tarefa tarefa = TarefaBuilder.umTarefa()
+	            .comNome("Tarefa")
+	            .comStatus(TarefaStatus.PENDENTE)
+	            .agora();
+	    Usuario usuarioMock = Mockito.mock(Usuario.class);
+		usuarioMock.setId(1L);
+		
+	    Tarefa tarefaAntiga = Mockito.mock(Tarefa.class);
+	    tarefaAntiga.setId(1L);
+	    
+	    Mockito.when(tarefaRepository.getReferenceById(id)).thenReturn(tarefaAntiga);
+
+        tarefaService.updateStatus(id, tarefaAntiga, tarefa);
+
+	    Mockito.verify(tarefaRepository).save(tarefaAntiga);
+	}
+	
+	
+	@Test
+	public void updateStatus_UsuarioNull() {
 	    // Cenário
 	    Long id = 1L;
 	    Tarefa tarefa = TarefaBuilder.umTarefa()
@@ -171,6 +195,7 @@ public class TarefaServiceTest {
 	            .agora();
 	    Tarefa tarefaAntiga = Mockito.mock(Tarefa.class);
 	    tarefaAntiga.setId(1L);
+	    tarefaAntiga.setUsuario(null);
 
 	    Mockito.when(tarefaRepository.getReferenceById(id)).thenReturn(tarefaAntiga);
 
@@ -211,5 +236,190 @@ public class TarefaServiceTest {
         Assertions.assertTrue(tarefasFiltradas.contains(tarefa1));
         Assertions.assertTrue(tarefasFiltradas.contains(tarefa2));
     }
+	
+	@Test
+	public void ordenarPorNivel() {
+		List<String> nomesTarefasDisponiveis = Arrays.asList(
+				"Tarefa (FACIL)",
+				"Outra Tarefa (DIFICIL)",
+				"Mais uma Tarefa (NORMAL)",
+				"Tarefa Final (FACIL)");
 
+		TarefaService tarefaService = new TarefaService();
+		List<String> nomesTarefasOrdenados = tarefaService.ordenarPorNivel(nomesTarefasDisponiveis);
+
+		List<String> nomesTarefasEsperados = Arrays.asList(
+				"Tarefa (FACIL)",
+				"Tarefa Final (FACIL)",
+				"Mais uma Tarefa (NORMAL)",
+				"Outra Tarefa (DIFICIL)");
+
+		Assertions.assertEquals(nomesTarefasEsperados, nomesTarefasOrdenados);
+	}
+	
+	@Test
+    public void testEncontrarTarefaPorNomeEStatus_TarefaEncontrada() {
+        Tarefa tarefa1 = new Tarefa();
+        tarefa1.setNome("Tarefa 1");
+        tarefa1.setStatus(TarefaStatus.PENDENTE);
+
+        List<Tarefa> tarefas = new ArrayList<>();
+        tarefas.add(tarefa1);
+
+        Mockito.when(tarefaRepository.findAll()).thenReturn(tarefas);
+
+        boolean tarefaComMesmoNomeEncontrada = tarefaService.encontrarTarefaPorNomeEStatus(tarefa1.getNome(), true);
+
+        Assertions.assertTrue(tarefaComMesmoNomeEncontrada);
+    }
+
+    @Test
+    public void testEncontrarTarefaPorNomeEStatus_TarefaNaoEncontrada() {
+        String nomeTarefaDisponivel = "Tarefa 3";
+
+        Tarefa tarefa1 = new Tarefa();
+        tarefa1.setNome("Tarefa 1");
+        tarefa1.setStatus(TarefaStatus.PENDENTE);
+
+        List<Tarefa> tarefas = new ArrayList<>();
+        tarefas.add(tarefa1);
+
+        Mockito.when(tarefaRepository.findAll()).thenReturn(tarefas);
+
+        boolean tarefaComMesmoNomeEncontrada = tarefaService.encontrarTarefaPorNomeEStatus(nomeTarefaDisponivel, false);
+
+        Assertions.assertFalse(tarefaComMesmoNomeEncontrada);
+    }
+    
+    @Test
+    public void encontrarTarefaPorNomeEStatus_TarefaNaoEncontradaStatusNull() {
+        String nomeTarefaDisponivel = "Tarefa 3";
+
+        Tarefa tarefa1 = new Tarefa();
+        tarefa1.setNome("Tarefa 1");
+        tarefa1.setStatus(null);
+
+        List<Tarefa> tarefas = new ArrayList<>();
+        tarefas.add(tarefa1);
+
+        Mockito.when(tarefaRepository.findAll()).thenReturn(tarefas);
+
+        boolean tarefaComMesmoNomeEncontrada = tarefaService.encontrarTarefaPorNomeEStatus(nomeTarefaDisponivel, false);
+
+        Assertions.assertFalse(tarefaComMesmoNomeEncontrada);
+    }
+    
+    @Test
+    public void encontrarTarefaPorNomeEStatus_TarefaNaoEncontradaStatusCONCLUIDA() {
+        String nomeTarefaDisponivel = "Tarefa 3";
+
+        Tarefa tarefa1 = new Tarefa();
+        tarefa1.setNome("Tarefa 1");
+        tarefa1.setStatus(TarefaStatus.CONCLUIDA);
+
+        List<Tarefa> tarefas = new ArrayList<>();
+        tarefas.add(tarefa1);
+
+        Mockito.when(tarefaRepository.findAll()).thenReturn(tarefas);
+
+        boolean tarefaComMesmoNomeEncontrada = tarefaService.encontrarTarefaPorNomeEStatus(nomeTarefaDisponivel, false);
+
+        Assertions.assertFalse(tarefaComMesmoNomeEncontrada);
+    }
+    
+    @Test
+    public void testAdicionarTarefaDisponivel_ListaVazia() {
+        List<Tarefa> tarefasDisponiveis = new ArrayList<>();
+        List<String> nomesTarefasDisponiveis = new ArrayList<>();
+        Set<String> nomesTarefasSet = new HashSet<>();
+
+        tarefaService.adicionarTarefaDisponivel(tarefasDisponiveis, nomesTarefasDisponiveis, nomesTarefasSet);
+
+        Assertions.assertTrue(nomesTarefasDisponiveis.isEmpty());
+    }
+
+    @Test
+    public void testAdicionarTarefaDisponivel_TarefasNaoAdicionadas() {
+    	Tarefa tarefa = TarefaBuilder.umTarefa().comId(1L).comNome("Tarefa 1").comNivel(Nivel.FACIL).agora();
+    	
+        List<Tarefa> tarefasDisponiveis = new ArrayList<>();
+        tarefasDisponiveis.add(tarefa);
+
+        List<String> nomesTarefasDisponiveis = new ArrayList<>();
+        nomesTarefasDisponiveis.add(tarefa.getNome());
+                
+        Set<String> nomesTarefasSet = new HashSet<>();
+        nomesTarefasSet.add(tarefa.getNome());
+
+        Mockito.when(tarefaService.encontrarTarefaPorNomeEStatus(tarefa.getNome(),false)).thenReturn(true);
+
+        
+        tarefaService.adicionarTarefaDisponivel(tarefasDisponiveis, nomesTarefasDisponiveis, nomesTarefasSet);
+
+        Assertions.assertEquals(1, nomesTarefasDisponiveis.size());
+        Assertions.assertFalse(!nomesTarefasSet.contains(tarefa.getNome()));
+    }
+
+    @Test
+    public void testAdicionarTarefaDisponivel_TarefasJaAdicionadas() {
+        List<Tarefa> tarefasDisponiveis = new ArrayList<>();
+        tarefasDisponiveis.add(TarefaBuilder.umTarefa().comNome("Tarefa 1").comNivel(Nivel.FACIL).agora());
+
+        List<String> nomesTarefasDisponiveis = new ArrayList<>();
+        nomesTarefasDisponiveis.add("1. Tarefa 1 (FACIL)");
+
+        Set<String> nomesTarefasSet = new HashSet<>();
+        nomesTarefasSet.add("Tarefa 1");
+
+        tarefaService.adicionarTarefaDisponivel(tarefasDisponiveis, nomesTarefasDisponiveis, nomesTarefasSet);
+
+        Assertions.assertEquals(1, nomesTarefasDisponiveis.size());
+        Assertions.assertTrue(nomesTarefasDisponiveis.contains("1. Tarefa 1 (FACIL)"));
+    }
+    
+    @Test
+    public void testAdicionarTarefaDisponivel_TarefasNaoAdicionadasDevidoAoNome() {
+    	Tarefa tarefa1 = TarefaBuilder.umTarefa().comId(1L).comNome("Tarefa 1").comStatus(TarefaStatus.CONCLUIDA).comNivel(Nivel.FACIL).agora();
+    	
+    	List<Tarefa> tarefasDisponiveis = new ArrayList<>();
+        tarefasDisponiveis.add(tarefa1);
+
+        List<String> nomesTarefasDisponiveis = new ArrayList<>();
+        nomesTarefasDisponiveis.add(tarefa1.getNome());
+
+        Set<String> nomesTarefasSet = new HashSet<>();
+        nomesTarefasSet.add(tarefa1.getNome()); 
+        
+        boolean tarefaComMesmoNomeEncontrada = false;
+        Mockito.when(tarefaService.encontrarTarefaPorNomeEStatus(tarefa1.getNome(),tarefaComMesmoNomeEncontrada)).thenReturn(true);
+
+        tarefaService.adicionarTarefaDisponivel(tarefasDisponiveis, nomesTarefasDisponiveis, nomesTarefasSet);
+
+        Assertions.assertEquals(1, nomesTarefasDisponiveis.size());
+        Mockito.verify(tarefaService).encontrarTarefaPorNomeEStatus("Tarefa 1", tarefaComMesmoNomeEncontrada);
+    }
+    
+    @Test
+    public void testTarefasDisponiveis() {
+        // Crie algumas tarefas simuladas para o mock do repositório
+    	Tarefa tarefa1 = TarefaBuilder.umTarefa().comId(1L).comNome("Tarefa 1").comStatus(TarefaStatus.CONCLUIDA).comNivel(Nivel.FACIL).agora();
+    	Tarefa tarefa2 = TarefaBuilder.umTarefa().comId(1L).comNome("Tarefa 2").comNivel(Nivel.FACIL).agora();
+
+        List<Tarefa> tarefasDisponiveis = new ArrayList<>();
+        tarefasDisponiveis.add(tarefa1);
+        tarefasDisponiveis.add(tarefa2);
+
+        // Configuração do comportamento do mock do TarefaRepository
+        Mockito.when(tarefaRepository.encontrarTarefasDisponiveis()).thenReturn(tarefasDisponiveis);
+        Mockito.when(tarefaRepository.findByStatus(TarefaStatus.CONCLUIDA)).thenReturn(new ArrayList<>());
+
+        // Execute o método que você está testando
+        List<String> nomesTarefasDisponiveis = tarefaService.tarefasDisponiveis();
+
+        // Verificação do resultado
+        Assertions.assertEquals(2, nomesTarefasDisponiveis.size());
+        Assertions.assertTrue(nomesTarefasDisponiveis.contains("1. Tarefa 1  (FACIL)")); // Ajuste o NIVEL para o valor correto
+        Assertions.assertTrue(nomesTarefasDisponiveis.contains("2. Tarefa 2  (FACIL)")); // Ajuste o NIVEL para o valor correto
+    }
 }
+

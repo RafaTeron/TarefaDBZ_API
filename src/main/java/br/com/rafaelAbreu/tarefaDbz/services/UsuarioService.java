@@ -103,8 +103,7 @@ public class UsuarioService {
 					if (verificarTarefaEmAndamentoOuPendente(tarefaEscolhida, usuario)) {
 						criarCopiaTarefa(usuario, tarefas, tarefaEscolhida);
 					} else {
-						throw new ErroTarefaException(
-								"A tarefa selecionada está em andamento ou pendente para outro usuário.");
+						throw new ErroTarefaException("A tarefa selecionada está em andamento ou pendente para outro usuário.");
 					}
 				} else {
 					salvarTarefa(usuario, tarefas, tarefaEscolhida);
@@ -115,8 +114,7 @@ public class UsuarioService {
 
 			marcarTarefasAnterioresComoPendentes(tarefas);
 		} else {
-			throw new ErroTarefaException(
-					"Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível.");
+			throw new ErroTarefaException("Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível.");
 		}
 	}
 

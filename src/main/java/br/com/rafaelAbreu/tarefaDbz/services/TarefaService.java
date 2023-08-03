@@ -44,7 +44,8 @@ public class TarefaService {
 	public Tarefa updateStatus(Long id, Tarefa entity ,Tarefa obj) {		
 		entity = tarefaRepository.getReferenceById(id);
 		entity.setStatus(obj.getStatus());
-		if (obj.getStatus() == TarefaStatus.CONCLUIDA && entity.getUsuario() != null) {
+		if (obj.getStatus() == TarefaStatus.CONCLUIDA 
+				&& entity.getUsuario() != null) {
 	        Nivel nivel = entity.getNivel();
 	        entity.getUsuario().incrementarTarefaConcluida(nivel);
 	    }
@@ -76,7 +77,7 @@ public class TarefaService {
 	    return nomesTarefasDisponiveisOrdenadas;
 	}
 
-	private void adicionarTarefaDisponivel(List<Tarefa> tarefasDisponiveis, List<String> nomesTarefasDisponiveis,Set<String> nomesTarefasSet) {
+	protected void adicionarTarefaDisponivel(List<Tarefa> tarefasDisponiveis, List<String> nomesTarefasDisponiveis,Set<String> nomesTarefasSet) {
 		for (int i = 0; i < tarefasDisponiveis.size(); i++) {
 	        Tarefa tarefa = tarefasDisponiveis.get(i);
 	        String nomeTarefaDisponivel = tarefa.getNome();
@@ -86,16 +87,18 @@ public class TarefaService {
 	        tarefaComMesmoNomeEncontrada = encontrarTarefaPorNomeEStatus(nomeTarefaDisponivel,
 					tarefaComMesmoNomeEncontrada);
 
-	        if (!tarefaComMesmoNomeEncontrada && !nomesTarefasSet.contains(nomeTarefaDisponivel)) {
+	        if (!tarefaComMesmoNomeEncontrada && 
+	        		!nomesTarefasSet.contains(nomeTarefaDisponivel)) {
 	            nomesTarefasSet.add(nomeTarefaDisponivel);
 	            nomesTarefasDisponiveis.add((i + 1) + ". " + nomeTarefaDisponivel + "  (" + nivelTarefaDisponivel + ")");
 	        }
 	    }
 	}
 
-	private boolean encontrarTarefaPorNomeEStatus(String nomeTarefaDisponivel, boolean tarefaComMesmoNomeEncontrada) {
+	protected boolean encontrarTarefaPorNomeEStatus(String nomeTarefaDisponivel, boolean tarefaComMesmoNomeEncontrada) {
 		for (Tarefa tarefa : tarefaRepository.findAll()) {
-		    if (tarefa.getStatus() != null && !tarefa.getStatus().equals(TarefaStatus.CONCLUIDA)
+		    if (tarefa.getStatus() != null && 
+		    		!tarefa.getStatus().equals(TarefaStatus.CONCLUIDA)
 		            && tarefa.getNome().equals(nomeTarefaDisponivel)) {
 		        tarefaComMesmoNomeEncontrada = true;
 		        break;
