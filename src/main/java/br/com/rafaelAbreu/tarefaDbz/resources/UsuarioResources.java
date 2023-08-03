@@ -67,7 +67,7 @@ public class UsuarioResources {
 	@PostMapping("/{id}/adicionarTarefa")
     public ResponseEntity<String> adicionarTarefa(@PathVariable Long id, @RequestBody int opcao) {
 		try {
-	        usuarioService.adicionarTarefa(id, opcao);
+	        usuarioService.adicionarTarefaAoUsuario(id, opcao);
 	        return ResponseEntity.ok("Tarefa adicionada com sucesso!");
 	    } catch (SemUsuarioException | ErroTarefaException | ErroUsuarioException e) {
 	        return ResponseEntity.badRequest().body(e.getMessage());

@@ -2,7 +2,6 @@ package br.com.rafaelAbreu.tarefaDbz.builder;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
@@ -32,8 +31,8 @@ public class UsuarioBuilder {
 		elemento.setEmail("gohan@gmail.com");
 		elemento.setSenha("gohan123");
 		elemento.setRaca(TipoUsuario.SAYAJIN);
-		elemento.setTarefasConcluidas(Collections.singletonMap(Nivel.FACIL, 3));
-		elemento.setTarefa(List.of(TarefaBuilder.umTarefa().agora()));
+		elemento.setTarefasConcluidas(Collections.singletonMap(Nivel.FACIL, null));
+		elemento.setTarefa(null);
 	}
 	
 	public UsuarioBuilder comId(Long param) {

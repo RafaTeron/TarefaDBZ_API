@@ -12,19 +12,19 @@ public class TarefaBuilder {
 
 	public static TarefaBuilder umTarefa() {
 		TarefaBuilder builder = new TarefaBuilder();
-		inicializarDadosPadroes(builder, null);
+		inicializarDadosPadroes(builder);
 		return builder;
 	}
 
-	public static void inicializarDadosPadroes(TarefaBuilder builder, Usuario usuario) {
+	public static void inicializarDadosPadroes(TarefaBuilder builder) {
 		builder.elemento = new Tarefa();
 		Tarefa elemento = builder.elemento;
 
-		elemento.setId(1L);
-		elemento.setNome("Controlar o Ki");
-		elemento.setStatus(TarefaStatus.EM_ANDAMENTO);
-		elemento.setNivel(Nivel.NORMAL);
-		elemento.setUsuario(usuario);
+		elemento.setId(null);
+		elemento.setNome(null);
+		elemento.setStatus(null);
+		elemento.setNivel(null);
+		elemento.setUsuario(null);
 	}
 
 	public TarefaBuilder comId(Long param) {
@@ -53,6 +53,12 @@ public class TarefaBuilder {
 	}
 
 	public Tarefa agora() {
-		return elemento;
+	    Tarefa novaTarefa = new Tarefa();
+	    novaTarefa.setId(elemento.getId());
+	    novaTarefa.setNome(elemento.getNome());
+	    novaTarefa.setStatus(elemento.getStatus());
+	    novaTarefa.setNivel(elemento.getNivel());
+	    novaTarefa.setUsuario(elemento.getUsuario());
+	    return novaTarefa;
 	}
 }

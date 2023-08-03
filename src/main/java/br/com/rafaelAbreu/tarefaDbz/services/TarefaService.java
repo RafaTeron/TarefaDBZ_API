@@ -51,7 +51,7 @@ public class TarefaService {
 		return tarefaRepository.save(entity);
 	}
 
-	private void updateData(Tarefa entity, Tarefa obj) {
+	protected void updateData(Tarefa entity, Tarefa obj) {
 		entity.setNome(obj.getNome());				
 	}
 
@@ -69,34 +69,52 @@ public class TarefaService {
 
 	    Set<String> nomesTarefasSet = new HashSet<>();
 
-	    for (int i = 0; i < tarefasDisponiveis.size(); i++) {
-	        Tarefa tarefaDisponivel = tarefasDisponiveis.get(i);
-	        String nomeTarefaDisponivel = tarefaDisponivel.getNome();
-	        String nivelTarefaDisponivel = tarefaDisponivel.getNivel().toString();
+	    adicionarTarefaDisponivel(tarefasDisponiveis, nomesTarefasDisponiveis, nomesTarefasSet);
+
+	    List<String> nomesTarefasDisponiveisOrdenadas = ordenarPorNivel(nomesTarefasDisponiveis);
+
+	    return nomesTarefasDisponiveisOrdenadas;
+	}
+
+	private void adicionarTarefaDisponivel(List<Tarefa> tarefasDisponiveis, List<String> nomesTarefasDisponiveis,Set<String> nomesTarefasSet) {
+		for (int i = 0; i < tarefasDisponiveis.size(); i++) {
+	        Tarefa tarefa = tarefasDisponiveis.get(i);
+	        String nomeTarefaDisponivel = tarefa.getNome();
+	        String nivelTarefaDisponivel = tarefa.getNivel().toString();
 	        
 	        boolean tarefaComMesmoNomeEncontrada = false;
-	        for (Tarefa tarefa : tarefaRepository.findAll()) {
-	            if (tarefa.getStatus() != null && !tarefa.getStatus().equals(TarefaStatus.CONCLUIDA)
-	                    && tarefa.getNome().equals(nomeTarefaDisponivel)) {
-	                tarefaComMesmoNomeEncontrada = true;
-	                break;
-	            }
-	        }
+	        tarefaComMesmoNomeEncontrada = encontrarTarefaPorNomeEStatus(nomeTarefaDisponivel,
+					tarefaComMesmoNomeEncontrada);
 
 	        if (!tarefaComMesmoNomeEncontrada && !nomesTarefasSet.contains(nomeTarefaDisponivel)) {
 	            nomesTarefasSet.add(nomeTarefaDisponivel);
 	            nomesTarefasDisponiveis.add((i + 1) + ". " + nomeTarefaDisponivel + "  (" + nivelTarefaDisponivel + ")");
 	        }
 	    }
+	}
 
-	    List<String> nomesTarefasDisponiveisOrdenadas = nomesTarefasDisponiveis.stream()
+	private boolean encontrarTarefaPorNomeEStatus(String nomeTarefaDisponivel, boolean tarefaComMesmoNomeEncontrada) {
+		for (Tarefa tarefa : tarefaRepository.findAll()) {
+		    if (tarefa.getStatus() != null && !tarefa.getStatus().equals(TarefaStatus.CONCLUIDA)
+		            && tarefa.getNome().equals(nomeTarefaDisponivel)) {
+		        tarefaComMesmoNomeEncontrada = true;
+		        break;
+		    }
+		}
+		return tarefaComMesmoNomeEncontrada;
+	}
+
+	protected List<String> ordenarPorNivel(List<String> nomesTarefasDisponiveis) {
+		List<String> nomesTarefasDisponiveisOrdenadas = nomesTarefasDisponiveis.stream()
 	        .sorted(Comparator.comparing(tarefa -> {
-	            String nivel = tarefa.substring(tarefa.lastIndexOf("(") + 1, tarefa.lastIndexOf(")")).trim();
+	            String nivel = tarefa.substring(
+	            		tarefa.lastIndexOf("(") + 1,
+	            		tarefa.lastIndexOf(")"))
+	            		.trim();
 	            return Nivel.valueOf(nivel.toUpperCase()).ordinal();
 	        }))
 	        .collect(Collectors.toList());
-
-	    return nomesTarefasDisponiveisOrdenadas;
+		return nomesTarefasDisponiveisOrdenadas;
 	}
 	
 
