@@ -867,11 +867,12 @@ public class UsuarioServiceTest {
         
         List<Tarefa> tarefas = new ArrayList<>();
 
-        Tarefa tarefaEscolhida = new Tarefa();
-        tarefaEscolhida.setId(1L);
-        tarefaEscolhida.setNome("Tarefa 1");
-        tarefaEscolhida.setStatus(TarefaStatus.CONCLUIDA);
-        tarefaEscolhida.setNivel(Nivel.FACIL);
+        Tarefa tarefaEscolhida = TarefaBuilder.umTarefa()
+        		.comId(1L)
+				.comNome("Tarefa 1")
+				.comStatus(TarefaStatus.CONCLUIDA)
+				.comNivel(Nivel.FACIL)
+				.agora();
 
         List<Tarefa> tarefasDisponiveis = new ArrayList<>(Arrays.asList(tarefaEscolhida));
 
