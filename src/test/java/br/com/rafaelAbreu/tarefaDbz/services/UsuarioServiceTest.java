@@ -142,7 +142,7 @@ public class UsuarioServiceTest {
 	
 	@Test
 	public void verificarTarefaEmAndamentoOuPendente() {
-		// Criação do objeto de teste
+		// cenario
 		Tarefa tarefaEscolhida = TarefaBuilder.umTarefa()
 				.comNome("TarefaEscolhida")
 				.comStatus(TarefaStatus.CONCLUIDA)
@@ -157,20 +157,21 @@ public class UsuarioServiceTest {
 				.agora();
 		Usuario usuario = Mockito.mock(Usuario.class);
 
-		// Criação da lista de tarefas do usuário
 		List<Tarefa> tarefas = Arrays.asList(tarefa1 , tarefa2, tarefaEscolhida);
 		
 		Mockito.when(usuario.getTarefa()).thenReturn(tarefas);
 
+		//açao
 		boolean resultado = usuarioService.verificarTarefaEmAndamentoOuPendente(tarefaEscolhida, usuario);
 
-		// Verificação do resultado
+		//verificação 
 		Assertions.assertFalse(resultado);
 	}
 	
 	
 	@Test
     public void adicionarPrimeiraTarefaSeForConcluida() throws ErroTarefaException {
+		//cenario
 		Long usuarioId = 1L;
 	    Usuario usuario = new Usuario();
 	    usuario.setId(usuarioId);
@@ -186,10 +187,10 @@ public class UsuarioServiceTest {
 	    Mockito.when(tarefaRepository.TarefaAleatoriaFacil()).thenReturn(tarefaAleatoria);
 	    Mockito.when(usuarioService.verificarTarefaEmAndamentoOuPendente(tarefaAleatoria, usuario)).thenReturn(true);
 
-	    // Ação
+	    //ação
 	    usuarioService.primeiraTarefa(usuario, tarefas);
 
-	    // Verificação
+	    //verificação
 	    Assertions.assertEquals(1, tarefas.size());
 
 	    Tarefa tarefaAdicionada = tarefas.get(0);
@@ -223,6 +224,7 @@ public class UsuarioServiceTest {
 		// açao
 		try {
 			usuarioService.primeiraTarefa(usuario, tarefas);
+			//verificaçao
 			Assertions.fail();
 		} catch (ErroTarefaException e) {
 			Assertions.assertEquals("A tarefa selecionada está em andamento ou pendente para outro usuário.",
@@ -261,8 +263,12 @@ public class UsuarioServiceTest {
 		
 	@Test
     void criarCopiaTarefa() {
-        Usuario usuario = UsuarioBuilder.umUsuario().agora();
-        Tarefa tarefaOriginal = TarefaBuilder.umTarefa().agora();
+		//cenario
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+        Tarefa tarefaOriginal = TarefaBuilder.umTarefa()
+        		.comNome("Tarefa Original")
+	    		.comNivel(Nivel.FACIL)
+	    		.agora();
 
         Tarefa tarefaCopia = new Tarefa();
         tarefaCopia.setNivel(tarefaOriginal.getNivel());
@@ -274,23 +280,32 @@ public class UsuarioServiceTest {
 
         List<Tarefa> tarefas = new ArrayList<>();
 
+        //açao
         usuarioService.criarCopiaTarefa(usuario, tarefas, tarefaOriginal);
 
+        //verificaçao
         Assertions.assertEquals(1, tarefas.size());
         Assertions.assertEquals(tarefaCopia, tarefas.get(0));
     }
 
     @Test
     void adicionarTarefa() {
-        Usuario usuario = UsuarioBuilder.umUsuario().agora();
-        Tarefa tarefa = TarefaBuilder.umTarefa().agora();
+        //cenario
+    	Usuario usuario = UsuarioBuilder.umUsuario().agora();
+        Tarefa tarefa = TarefaBuilder.umTarefa()
+        		.comNome("Tarefa Aleatória")
+	    		.comStatus(TarefaStatus.CONCLUIDA)
+	    		.comNivel(Nivel.FACIL)
+	    		.agora();
 
         Mockito.when(tarefaRepository.save(Mockito.any(Tarefa.class))).thenReturn(tarefa);
 
         List<Tarefa> tarefaLista = new ArrayList<>();
 
+        //açao
         usuarioService.salvarTarefa(usuario, tarefaLista, tarefa);
 
+        //verificaçao
         Assertions.assertEquals(1, tarefaLista.size());
         Assertions.assertEquals(tarefa, tarefaLista.get(0));
         Assertions.assertEquals(TarefaStatus.EM_ANDAMENTO, tarefa.getStatus());
@@ -300,7 +315,7 @@ public class UsuarioServiceTest {
     
     @Test
     void verificarPermissaoTarefaDEUS() throws SemUsuarioException {
-        // Crie um usuário simulado para o teste
+        //cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -318,14 +333,16 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         Nivel resultado = usuarioService.verificarPermissaoTarefa(1L);
 
+        //verificaçao
         Assertions.assertEquals(Nivel.DEUS, resultado);
     }
     
     @Test
     void verificarPermissaoTarefaMUITO_DIFICIL() throws SemUsuarioException {
-        // Crie um usuário simulado para o teste
+    	//cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -343,14 +360,16 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         Nivel resultado = usuarioService.verificarPermissaoTarefa(1L);
 
+        //verificaçao
         Assertions.assertEquals(Nivel.MUITO_DIFICIL, resultado);
     }
     
     @Test
     void verificarPermissaoTarefaDIFICIL() throws SemUsuarioException {
-        // Crie um usuário simulado para o teste
+    	//cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -368,14 +387,16 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         Nivel resultado = usuarioService.verificarPermissaoTarefa(1L);
 
+        //verificaçao
         Assertions.assertEquals(Nivel.DIFICIL, resultado);
     }
     
     @Test
     void verificarPermissaoTarefaNORMAL() throws SemUsuarioException {
-        // Crie um usuário simulado para o teste
+    	//cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -392,14 +413,16 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         Nivel resultado = usuarioService.verificarPermissaoTarefa(1L);
 
+        //verificaçao
         Assertions.assertEquals(Nivel.NORMAL, resultado);
     }
     
     @Test
     void verificarPermissaoTarefaFACIL() throws SemUsuarioException {
-        // Crie um usuário simulado para o teste
+    	//cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -414,20 +437,24 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         Nivel resultado = usuarioService.verificarPermissaoTarefa(1L);
 
+        //verificaçao
         Assertions.assertEquals(Nivel.FACIL, resultado);
     }
     
     @Test
     void verificarPermissaoTarefaUsuarioVAZIO() throws SemUsuarioException {
-        // Crie um usuário simulado para o teste
+    	//cenario
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.empty());
 
+        //açao
         try {
         	usuarioService.verificarPermissaoTarefa(null);
-			Assertions.fail("nao");
+        	//verificaçao
+        	Assertions.fail();
 		} catch (SemUsuarioException e) {
 			Assertions.assertEquals("Usuário não encontrado", e.getMessage());
 		}
@@ -435,7 +462,7 @@ public class UsuarioServiceTest {
     
     @Test
     void nivelUsuarioDEUS() {
-        // Crie um usuário simulado para o teste
+    	//cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -453,14 +480,16 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         String resultado = usuarioService.nivelUsuario(1L);
       
+        //verificaçao
         Assertions.assertEquals("DEUS", resultado);
     }
     
     @Test
     void nivelUsuarioMUITO_DIFICIL() {
-        // Crie um usuário simulado para o teste
+    	//cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -478,15 +507,16 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         String resultado = usuarioService.nivelUsuario(1L);
-
         
+        //verificaçao
         Assertions.assertEquals("MUITO_DIFICIL", resultado);
     }
     
     @Test
     void nivelUsuarioDIFICIL() {
-        // Crie um usuário simulado para o teste
+    	//cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -503,15 +533,16 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         String resultado = usuarioService.nivelUsuario(1L);
 
-        
+        //verificaçao
         Assertions.assertEquals("DIFICIL", resultado);
     }
     
     @Test
     void nivelUsuarioNORMAL() {
-        // Crie um usuário simulado para o teste
+    	//cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -528,15 +559,16 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         String resultado = usuarioService.nivelUsuario(1L);
 
-        
+        //verificaçao
         Assertions.assertEquals("NORMAL", resultado);
     }
     
     @Test
     void nivelUsuarioFACIL() {
-        // Crie um usuário simulado para o teste
+    	//cenario
         Usuario usuario = UsuarioBuilder
         		.umUsuario()
         		.comId(1L)
@@ -552,14 +584,16 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
 
+        //açao
         String resultado = usuarioService.nivelUsuario(1L);
-
-        
+      
+        //verificaçao
         Assertions.assertEquals("FACIL", resultado);
     }
     
     @Test
     void marcarTarefasAnterioresComoPendentes() {   	
+    	//cenario
     	Tarefa tarefa1 = TarefaBuilder.umTarefa().comStatus(TarefaStatus.EM_ANDAMENTO).agora();
     	Tarefa tarefa2 = TarefaBuilder.umTarefa().comStatus(TarefaStatus.CONCLUIDA).agora();
     	Tarefa tarefaNova = TarefaBuilder.umTarefa().comStatus(TarefaStatus.EM_ANDAMENTO).agora();
@@ -568,8 +602,10 @@ public class UsuarioServiceTest {
     	
     	Mockito.when(tarefaRepository.save(Mockito.any(Tarefa.class))).thenReturn(null);
     	
+    	//açao
     	usuarioService.marcarTarefasAnterioresComoPendentes(tarefaLista);
     	
+    	//verificaçao
     	Mockito.verify(tarefaRepository, Mockito.times(1)).save(tarefa1);
     	Mockito.verify(tarefaRepository, Mockito.times(1)).save(tarefa2); 
     	Mockito.verify(tarefaRepository, Mockito.times(1)).save(tarefaNova);    	
@@ -577,20 +613,23 @@ public class UsuarioServiceTest {
     
     @Test
     void marcarTarefasAnterioresComoPendentes_ListaVazia() {
-        Tarefa tarefa1 = TarefaBuilder.umTarefa().comStatus(TarefaStatus.EM_ANDAMENTO).agora();
+        //cenario
+    	Tarefa tarefa1 = TarefaBuilder.umTarefa().comStatus(TarefaStatus.EM_ANDAMENTO).agora();
 
         List<Tarefa> tarefaLista = Arrays.asList(tarefa1);
 
         Mockito.when(tarefaRepository.save(Mockito.any(Tarefa.class))).thenReturn(null);
 
+        //açao
         usuarioService.marcarTarefasAnterioresComoPendentes(tarefaLista);
 
+        //verificaçao
         Mockito.verify(tarefaRepository, Mockito.times(0)).save(Mockito.any(Tarefa.class));
     }
     
     @Test
     public void novaTarefa_OpcaoValida() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
-        // Crie um usuário simulado para o teste
+        //cenario
         Usuario usuario = new Usuario();
         usuario.setId(1L);
         
@@ -598,17 +637,18 @@ public class UsuarioServiceTest {
         tarefasConcluidas.put(Nivel.FACIL, 3);
         usuario.setTarefasConcluidas(tarefasConcluidas);
 
-        // Crie algumas tarefas disponíveis
-        Tarefa tarefa1 = new Tarefa();
-        tarefa1.setId(1L);
-        tarefa1.setNome("Tarefa 1");
-        tarefa1.setStatus(TarefaStatus.CONCLUIDA);
-        tarefa1.setNivel(Nivel.FACIL);
+        Tarefa tarefa1 = TarefaBuilder.umTarefa()
+        		.comId(1L)
+				.comNome("Tarefa 1")
+				.comStatus(TarefaStatus.CONCLUIDA)
+				.comNivel(Nivel.FACIL)
+				.agora();
 
-        Tarefa tarefa2 = new Tarefa();
-        tarefa2.setId(2L);
-        tarefa2.setNome("Tarefa 2");
-        tarefa2.setNivel(Nivel.NORMAL);
+        Tarefa tarefa2 = TarefaBuilder.umTarefa()
+        		.comId(2L)
+				.comNome("Tarefa 2")
+				.comNivel(Nivel.NORMAL)
+				.agora();
 
         List<Tarefa> tarefasDisponiveis = Arrays.asList(tarefa1, tarefa2);
 
@@ -619,8 +659,10 @@ public class UsuarioServiceTest {
 
         int opcao = 2;
 
+        //açao
         usuarioService.novaTarefa(usuario, new ArrayList<>(), opcao);
 
+        //verificaçao
         Mockito.verify(usuarioRepository, Mockito.times(1)).save(usuario);
         Mockito.verify(tarefaRepository, Mockito.times(1)).save(tarefa2);
         Assertions.assertEquals(TarefaStatus.EM_ANDAMENTO, tarefa2.getStatus());
@@ -628,24 +670,27 @@ public class UsuarioServiceTest {
     }
     
     @Test
-    public void novaTarefa_OpcaoInvalida() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
-        Usuario usuario = new Usuario();
+    public void novaTarefa_OpcaoInvalidaMaiorQueALista() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
+        //cenario
+    	Usuario usuario = new Usuario();
         usuario.setId(1L);        
         Map<Nivel, Integer> tarefasConcluidas = new HashMap<>();
         tarefasConcluidas.put(Nivel.FACIL, 3);
         usuario.setTarefasConcluidas(tarefasConcluidas);
 
-        Tarefa tarefa1 = new Tarefa();
-        tarefa1.setId(1L);
-        tarefa1.setNome("Tarefa 1");
-        tarefa1.setStatus(TarefaStatus.CONCLUIDA);
-        tarefa1.setNivel(Nivel.FACIL);
+        Tarefa tarefa1 = TarefaBuilder.umTarefa()
+        		.comId(1L)
+				.comNome("Tarefa 1")
+				.comStatus(TarefaStatus.CONCLUIDA)
+				.comNivel(Nivel.FACIL)
+				.agora();
 
-        Tarefa tarefa2 = new Tarefa();
-        tarefa2.setId(2L);
-        tarefa2.setNome("Tarefa 2");
-        tarefa2.setStatus(TarefaStatus.PENDENTE);
-        tarefa2.setNivel(Nivel.MUITO_DIFICIL);
+        Tarefa tarefa2 = TarefaBuilder.umTarefa()
+        		.comId(2L)
+				.comNome("Tarefa 2")
+				.comStatus(TarefaStatus.PENDENTE)
+				.comNivel(Nivel.MUITO_DIFICIL)
+				.agora();
 
         List<Tarefa> tarefasDisponiveis = Arrays.asList(tarefa1, tarefa2);
 
@@ -655,34 +700,38 @@ public class UsuarioServiceTest {
         Mockito.when(usuarioService.verificarPermissaoTarefa(1L)).thenReturn(Nivel.NORMAL);
 
         int opcao = 4;
-        
+        //açao
         try {
         	usuarioService.novaTarefa(usuario, new ArrayList<>(), opcao);
-			Assertions.fail("Tarefa adicionada com sucesso!");
+			//verificaçao
+        	Assertions.fail();
 		} catch (ErroTarefaException e) {
 			Assertions.assertEquals("Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível.", e.getMessage());
 		}
     }
     
     @Test
-    public void novaTarefa_OpcaoInvalida2() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
-        Usuario usuario = new Usuario();
+    public void novaTarefa_OpcaoInvalidaMenorQueZero() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
+        //cenario
+    	Usuario usuario = new Usuario();
         usuario.setId(1L);        
         Map<Nivel, Integer> tarefasConcluidas = new HashMap<>();
         tarefasConcluidas.put(Nivel.FACIL, 3);
         usuario.setTarefasConcluidas(tarefasConcluidas);
 
-        Tarefa tarefa1 = new Tarefa();
-        tarefa1.setId(1L);
-        tarefa1.setNome("Tarefa 1");
-        tarefa1.setStatus(TarefaStatus.CONCLUIDA);
-        tarefa1.setNivel(Nivel.FACIL);
+        Tarefa tarefa1 = TarefaBuilder.umTarefa()
+        		.comId(1L)
+				.comNome("Tarefa 1")
+				.comStatus(TarefaStatus.CONCLUIDA)
+				.comNivel(Nivel.FACIL)
+				.agora();
 
-        Tarefa tarefa2 = new Tarefa();
-        tarefa2.setId(2L);
-        tarefa2.setNome("Tarefa 2");
-        tarefa2.setStatus(TarefaStatus.PENDENTE);
-        tarefa2.setNivel(Nivel.MUITO_DIFICIL);
+        Tarefa tarefa2 = TarefaBuilder.umTarefa()
+        		.comId(2L)
+				.comNome("Tarefa 2")
+				.comStatus(TarefaStatus.PENDENTE)
+				.comNivel(Nivel.MUITO_DIFICIL)
+				.agora();
 
         List<Tarefa> tarefasDisponiveis = Arrays.asList(tarefa1, tarefa2);
 
@@ -692,10 +741,11 @@ public class UsuarioServiceTest {
         Mockito.when(usuarioService.verificarPermissaoTarefa(1L)).thenReturn(Nivel.NORMAL);
 
         int opcao = 0;
-        
+        //açao
         try {
         	usuarioService.novaTarefa(usuario, new ArrayList<>(), opcao);
-			Assertions.fail("Tarefa adicionada com sucesso!");
+			//verificaçao
+        	Assertions.fail();
 		} catch (ErroTarefaException e) {
 			Assertions.assertEquals("Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível.", e.getMessage());
 		}
@@ -703,17 +753,19 @@ public class UsuarioServiceTest {
     
     @Test
     public void novaTarefa_NivelUsuarioInsuficiente() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
-        Usuario usuario = new Usuario();
+        //cenario
+    	Usuario usuario = new Usuario();
         usuario.setId(1L);
         Map<Nivel, Integer> tarefasConcluidas = new HashMap<>();
         tarefasConcluidas.put(Nivel.FACIL, 3);
         usuario.setTarefasConcluidas(tarefasConcluidas);
 
-        Tarefa tarefa1 = new Tarefa();
-        tarefa1.setId(1L);
-        tarefa1.setNome("Tarefa 1");
-        tarefa1.setStatus(TarefaStatus.CONCLUIDA);
-        tarefa1.setNivel(Nivel.DIFICIL);
+        Tarefa tarefa1 = TarefaBuilder.umTarefa()
+        		.comId(1L)
+				.comNome("Tarefa 1")
+				.comStatus(TarefaStatus.CONCLUIDA)
+				.comNivel(Nivel.DIFICIL)
+				.agora();
 
         List<Tarefa> tarefasDisponiveis = Arrays.asList(tarefa1);
 
@@ -724,87 +776,93 @@ public class UsuarioServiceTest {
 
         int opcao = 1;
 
+        //açao
         try {
         	usuarioService.novaTarefa(usuario, new ArrayList<>(), opcao);
-			Assertions.fail("nao");
+			//verificaçao
+        	Assertions.fail();
 		} catch (ErroUsuarioException e) {
 			Assertions.assertEquals("Nível do usuário insuficiente.", e.getMessage());
 		}
     }
     
     @Test
-    public void novaTarefa_NivelUsuarioInsuficiente2() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
-        Usuario usuario = new Usuario();
+    public void novaTarefa_NivelUsuarioNull() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
+        //cenario
+    	Usuario usuario = new Usuario();
         usuario.setId(1L);
         Map<Nivel, Integer> tarefasConcluidas = new HashMap<>();
-        tarefasConcluidas.put(Nivel.FACIL, 3);
+        tarefasConcluidas.put(null, null);
         usuario.setTarefasConcluidas(tarefasConcluidas);
 
-        Tarefa tarefa1 = new Tarefa();
-        tarefa1.setId(1L);
-        tarefa1.setNome("Tarefa 1");
-        tarefa1.setStatus(TarefaStatus.CONCLUIDA);
-        tarefa1.setNivel(Nivel.DIFICIL);
+        Tarefa tarefa1 = TarefaBuilder.umTarefa()
+        		.comId(1L)
+				.comNome("Tarefa 1")
+				.comStatus(TarefaStatus.CONCLUIDA)
+				.comNivel(Nivel.DIFICIL)
+				.agora();
 
         List<Tarefa> tarefasDisponiveis = Arrays.asList(tarefa1);
 
         Mockito.when(usuarioRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(usuario));
         Mockito.when(tarefaRepository.encontrarTarefasDisponiveis()).thenReturn(tarefasDisponiveis);
 
-        Mockito.when(usuarioService.verificarPermissaoTarefa(1L)).thenReturn(null);
-
         int opcao = 1;
 
+        //açao
         try {
         	usuarioService.novaTarefa(usuario, new ArrayList<>(), opcao);
-			Assertions.fail("nao");
+			//verificaçao
+        	Assertions.fail();
 		} catch (ErroUsuarioException e) {
 			Assertions.assertEquals("Nível do usuário insuficiente.", e.getMessage());
 		}
     }
     
     @Test
-    void novaTarefa_ValidOpcao_TarefaEscolhidaStatusConcluida() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
-        // Arrange
+    void novaTarefa_tarefaEscolhidaStatusConcluida() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
+        //cenario
         int opcao = 1;
-        Usuario usuario = Mockito.mock(Usuario.class);
-        Mockito.when(usuario.getId()).thenReturn(1L);
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
         Map<Nivel, Integer> tarefasConcluidas = new HashMap<>();
         tarefasConcluidas.put(Nivel.FACIL, 3);
         usuario.setTarefasConcluidas(tarefasConcluidas);
         
         List<Tarefa> tarefas = new ArrayList<>();
 
-        Tarefa tarefaEscolhida = new Tarefa();
-        tarefaEscolhida.setId(1L);
-        tarefaEscolhida.setNome("Tarefa 1");
-        tarefaEscolhida.setStatus(TarefaStatus.CONCLUIDA);
-        tarefaEscolhida.setNivel(Nivel.FACIL);
+        Tarefa tarefaEscolhida = TarefaBuilder.umTarefa()
+        		.comId(1L)
+				.comNome("Tarefa 1")
+				.comStatus(TarefaStatus.CONCLUIDA)
+				.comNivel(Nivel.FACIL)
+				.agora();
 
         List<Tarefa> tarefasDisponiveis = new ArrayList<>(Arrays.asList(tarefaEscolhida));
 
         Mockito.when(usuarioRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(usuario));
         Mockito.when(tarefaRepository.encontrarTarefasDisponiveis()).thenReturn(tarefasDisponiveis);
-        Mockito.when(usuarioService.verificarPermissaoTarefa(1L)).thenReturn(Nivel.NORMAL);
         Mockito.when(usuarioService.verificarTarefaEmAndamentoOuPendente(tarefaEscolhida,usuario)).thenReturn(true);
-        Mockito.doCallRealMethod().when(usuarioService).criarCopiaTarefa(Mockito.eq(usuario), Mockito.eq(tarefas), Mockito.eq(tarefaEscolhida));
 
+        //açao
         usuarioService.novaTarefa(usuario, tarefas, opcao);
 
+        //verificaçao
         Mockito.verify(usuarioService, Mockito.times(1)).verificarTarefaEmAndamentoOuPendente(tarefaEscolhida, usuario);
         Mockito.verify(usuarioService, Mockito.times(1)).criarCopiaTarefa(usuario, tarefas, tarefaEscolhida);
-  
+        Mockito.verify(usuarioService).verificarPermissaoTarefa(1L);
+        
         Assertions.assertEquals(1, tarefas.size());
     }
     
     @Test
-    void novaTarefa_ValidOpcao_TarefaEscolhidaStatusConcluida2() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
-        // Arrange
+    void novaTarefa_verificarTarefaEmAndamentoOuPendenteFalse() throws ErroTarefaException, ErroUsuarioException, SemUsuarioException {
+        //cenario
         int opcao = 1;
-        Usuario usuario = Mockito.mock(Usuario.class);
-        Mockito.when(usuario.getId()).thenReturn(1L);
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
         Map<Nivel, Integer> tarefasConcluidas = new HashMap<>();
-        tarefasConcluidas.put(Nivel.FACIL, -1);
+        tarefasConcluidas.put(Nivel.FACIL, 2);
         usuario.setTarefasConcluidas(tarefasConcluidas);
         
         List<Tarefa> tarefas = new ArrayList<>();
@@ -819,32 +877,34 @@ public class UsuarioServiceTest {
 
         Mockito.when(usuarioRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(usuario));
         Mockito.when(tarefaRepository.encontrarTarefasDisponiveis()).thenReturn(tarefasDisponiveis);
-        Mockito.when(usuarioService.verificarPermissaoTarefa(1L)).thenReturn(Nivel.FACIL);
         Mockito.when(usuarioService.verificarTarefaEmAndamentoOuPendente(tarefaEscolhida,usuario)).thenReturn(false);
-        Mockito.doCallRealMethod().when(usuarioService).criarCopiaTarefa(Mockito.eq(usuario), Mockito.eq(tarefas), Mockito.eq(tarefaEscolhida));
 
+        //açao
         try {
         	usuarioService.novaTarefa(usuario, tarefas, opcao);
-			Assertions.fail();
+			//verificaçao
+        	Assertions.fail();
 		} catch (ErroTarefaException e) {
 			Assertions.assertEquals("A tarefa selecionada está em andamento ou pendente para outro usuário.", e.getMessage());
 		}
     }
     
     @Test
-    public void testAdicionarTarefaAoUsuarioComUsuarioExistenteSemTarefas() throws SemUsuarioException, ErroTarefaException, ErroUsuarioException {
+    public void adicionarTarefaAoUsuario_ComUsuarioExistenteSemTarefas() throws SemUsuarioException, ErroTarefaException, ErroUsuarioException {
+    	//cenario
     	Long usuarioId = 1L;
 	    Usuario usuario = new Usuario();
 	    usuario.setId(usuarioId); 
 
-        Tarefa tarefaAleatoria = new Tarefa();
-        tarefaAleatoria.setNome("Tarefa Aleatória");
+        Tarefa tarefaAleatoria = TarefaBuilder.umTarefa().comNome("Tarefa Aleatoria").agora();
 
         Mockito.when(usuarioRepository.findById(usuarioId)).thenReturn(Optional.of(usuario));
         Mockito.when(tarefaRepository.TarefaAleatoriaFacil()).thenReturn(tarefaAleatoria);
 
+        //açao
         usuarioService.adicionarTarefaAoUsuario(usuarioId, 1);
 
+        //verificaçao
         Tarefa tarefaAdicionada = usuario.getTarefa().get(0);
         Assertions.assertEquals(1, usuario.getTarefa().size());
         Assertions.assertEquals(tarefaAleatoria,tarefaAdicionada);
@@ -852,6 +912,7 @@ public class UsuarioServiceTest {
     
     @Test
     public void adicionarTarefaAoUsuario_NovaTarefa() throws SemUsuarioException, ErroTarefaException, ErroUsuarioException {
+    	//cenario
     	Tarefa tarefaEscolhida = TarefaBuilder.umTarefa()
 				.comNome("TarefaEscolhida")
 				.comNivel(Nivel.FACIL)
@@ -881,8 +942,10 @@ public class UsuarioServiceTest {
         Mockito.when(tarefaRepository.encontrarTarefasDisponiveis()).thenReturn(tarefasDisponiveis);
         Mockito.when(usuarioRepository.findById(usuario.getId())).thenReturn(Optional.of(usuario));
 
+        //açao
         usuarioService.adicionarTarefaAoUsuario(usuario.getId(), 1);
 
+        //verificaçao
         Tarefa tarefaAdicionada = usuario.getTarefa().get(2);
         Assertions.assertEquals(3, usuario.getTarefa().size());
         Assertions.assertEquals(tarefaEscolhida,tarefaAdicionada);
@@ -890,11 +953,13 @@ public class UsuarioServiceTest {
     
     @Test
     public void adicionarTarefaAoUsuario_SemUsuario() throws SemUsuarioException, ErroTarefaException, ErroUsuarioException {
-    	
+    	//cenario
         Mockito.when(usuarioRepository.findById(1L)).thenReturn(Optional.empty());
 
+        //açao
         try {
 			usuarioService.adicionarTarefaAoUsuario(1L, 1);
+			//verificaçao
 			Assertions.fail();
 		} catch (SemUsuarioException e) {
 			Assertions.assertEquals("Usuário não encontrado!",e.getMessage());
