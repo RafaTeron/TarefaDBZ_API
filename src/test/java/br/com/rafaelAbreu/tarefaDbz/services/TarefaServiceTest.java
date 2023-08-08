@@ -470,8 +470,8 @@ public class TarefaServiceTest {
 
         //Verificação
         Assertions.assertEquals(2, nomesTarefasDisponiveis.size());
-        Assertions.assertTrue(nomesTarefasDisponiveis.contains("1. Tarefa 1  (FACIL)")); // Ajuste o NIVEL para o valor correto
-        Assertions.assertTrue(nomesTarefasDisponiveis.contains("2. Tarefa 2  (FACIL)")); // Ajuste o NIVEL para o valor correto
+        Assertions.assertTrue(nomesTarefasDisponiveis.contains("1. Tarefa 1  (FACIL)")); 
+        Assertions.assertTrue(nomesTarefasDisponiveis.contains("2. Tarefa 2  (FACIL)")); 
     }
 }
 
