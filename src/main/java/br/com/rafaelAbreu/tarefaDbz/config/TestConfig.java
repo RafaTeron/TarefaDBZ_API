@@ -4,8 +4,6 @@ import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
@@ -15,8 +13,7 @@ import br.com.rafaelAbreu.tarefaDbz.entities.enums.TipoUsuario;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 import br.com.rafaelAbreu.tarefaDbz.repositories.UsuarioRepository;
 
-@Configuration
-@Profile("test")
+
 public class TestConfig implements CommandLineRunner {
 
 	@Autowired

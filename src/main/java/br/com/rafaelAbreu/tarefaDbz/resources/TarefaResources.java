@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.ErroTarefaException;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 import br.com.rafaelAbreu.tarefaDbz.services.TarefaService;
 
@@ -35,7 +36,7 @@ public class TarefaResources {
 	}
 
 	@GetMapping(value = "/{id}")
-	public ResponseEntity<Tarefa> findById(@PathVariable Long id) {
+	public ResponseEntity<Tarefa> findById(@PathVariable Long id) throws ErroTarefaException {
 		Tarefa obj = tarefaService.findById(id);
 		return ResponseEntity.ok().body(obj);
 	}
@@ -53,7 +54,7 @@ public class TarefaResources {
 	}
 	
 	@PutMapping("/{id}/status")
-    public ResponseEntity<Tarefa> updateStatus(@PathVariable Long id, @RequestBody Tarefa updatedTarefa) {
+    public ResponseEntity<Tarefa> updateStatus(@PathVariable Long id, @RequestBody Tarefa updatedTarefa) throws ErroTarefaException {
         Tarefa existingTarefa = tarefaService.findById(id);
         if (existingTarefa == null) {
             return ResponseEntity.notFound().build();

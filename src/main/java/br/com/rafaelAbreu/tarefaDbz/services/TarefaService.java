@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.ErroTarefaException;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.SemUsuarioException;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 
 @Service
@@ -26,9 +28,13 @@ public class TarefaService {
 		return tarefaRepository.findAll();
 	}
 
-	public Tarefa findById(Long id) {
+	public Tarefa findById(Long id) throws ErroTarefaException {
 		Optional<Tarefa> obj = tarefaRepository.findById(id);
-		return obj.get();
+		if (obj.isPresent()) {
+			return obj.get();
+		} else {
+			throw new ErroTarefaException("Tarefa não encontrado");
+		}	
 	}
 
 	public Tarefa insert(Tarefa obj) {
