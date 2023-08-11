@@ -15,7 +15,6 @@ import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
 import br.com.rafaelAbreu.tarefaDbz.exceptions.ErroTarefaException;
-import br.com.rafaelAbreu.tarefaDbz.exceptions.SemUsuarioException;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 
 @Service

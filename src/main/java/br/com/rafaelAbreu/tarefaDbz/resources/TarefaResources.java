@@ -55,11 +55,7 @@ public class TarefaResources {
 	
 	@PutMapping("/{id}/status")
     public ResponseEntity<Tarefa> updateStatus(@PathVariable Long id, @RequestBody Tarefa updatedTarefa) throws ErroTarefaException {
-        Tarefa existingTarefa = tarefaService.findById(id);
-        if (existingTarefa == null) {
-            return ResponseEntity.notFound().build();
-        }
-
+        Tarefa existingTarefa = tarefaService.findById(id);    
         Tarefa updatedTarefaStatus = tarefaService.updateStatus(id, existingTarefa, updatedTarefa);
         return ResponseEntity.ok(updatedTarefaStatus);
     }
