@@ -1,7 +1,6 @@
 package br.com.rafaelAbreu.tarefaDbz.resources;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,13 +61,6 @@ public class TarefaResourceTest {
 	    tarefa.setStatus(TarefaStatus.EM_ANDAMENTO);
 	    tarefa.setUsuario(null);
 	    createdTarefa = tarefaRepository.save(tarefa);
-	}
-	
-	@AfterEach
-	void down() {
-	    if (createdTarefa != null) {
-	        tarefaRepository.delete(createdTarefa);
-	    }
 	}
 	
 	@Test
@@ -186,8 +178,8 @@ public class TarefaResourceTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/tarefas/" + idUsuario + "/encontrarTarefasPorUsuario"))
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2))) // Verifica se existem duas tarefas na resposta JSON
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].nome").value(tarefa1.getNome())) // Verifica o nome da primeira tarefa
-            .andExpect(MockMvcResultMatchers.jsonPath("$[1].nome").value(tarefa2.getNome())); // Verifica o nome da segunda tarefa
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2))) 
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].nome").value(tarefa1.getNome())) 
+            .andExpect(MockMvcResultMatchers.jsonPath("$[1].nome").value(tarefa2.getNome()));
 	}
 }

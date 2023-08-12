@@ -1,9 +1,11 @@
 package br.com.rafaelAbreu.tarefaDbz.resources;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.AfterEach;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -22,14 +24,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.rafaelAbreu.tarefaDbz.builder.TarefaBuilder;
 import br.com.rafaelAbreu.tarefaDbz.builder.UsuarioBuilder;
 import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
+import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TipoUsuario;
 import br.com.rafaelAbreu.tarefaDbz.exceptions.ErroTarefaException;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 import br.com.rafaelAbreu.tarefaDbz.repositories.UsuarioRepository;
+import br.com.rafaelAbreu.tarefaDbz.services.TarefaService;
 import br.com.rafaelAbreu.tarefaDbz.services.UsuarioService;
 
 @SpringBootTest
@@ -39,6 +44,9 @@ public class UsuarioResourceTest {
 
 	@Mock
 	UsuarioService usuarioService;
+	
+	@Mock
+	TarefaService tarefaService;
 	
 	@Autowired
 	ObjectMapper mapper;
@@ -70,12 +78,6 @@ public class UsuarioResourceTest {
 	    createdUsuario = usuarioRepository.save(usuario);
 	}
 	
-	@AfterEach
-	void down() {
-	    if (createdUsuario != null) {
-	        usuarioRepository.delete(createdUsuario);
-	    }
-	}
 	
 	@Test
 	@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
@@ -138,22 +140,21 @@ public class UsuarioResourceTest {
 				.andDo(MockMvcResultHandlers.print());
 	}
 	
+	
+	
 	@Test
 	@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 	void adicionarTarefa() throws Exception {
-		Usuario usuario = new Usuario();
-		usuario.setId(2L);
-	    usuario.setNome("Nome do Usuário");
-	    usuarioRepository.save(usuario);
-
-	    Tarefa tarefaFacil = new Tarefa();
-	    tarefaFacil.setNome("Primeira Tarefa");
-	    tarefaFacil.setNivel(Nivel.FACIL);
+	    Tarefa tarefaFacil = TarefaBuilder
+	    		.umTarefa()
+	    		.comNome("Primeira Tarefa")
+	    		.comNivel(Nivel.FACIL)
+	    		.agora();
 	    tarefaRepository.save(tarefaFacil);
 
 	    int opcao = 1;
 
-	    mockMvc.perform(MockMvcRequestBuilders.post("/usuarios/2/adicionarTarefa", usuario.getId())
+	    mockMvc.perform(MockMvcRequestBuilders.post("/usuarios/1/adicionarTarefa", createdUsuario.getId())
 	            .contentType(MediaType.APPLICATION_JSON)
 	            .characterEncoding("UTF-8")
 	            .content(Integer.toString(opcao)))
@@ -165,7 +166,7 @@ public class UsuarioResourceTest {
 	@Test
 	@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 	void adicionarTarefa_UsuarioInexistente() throws Exception {
-	    int opcao = 1; // Defina a opção desejada
+	    int opcao = 1;
 
 	    mockMvc.perform(MockMvcRequestBuilders.post("/usuarios/99/adicionarTarefa")
 	            .contentType(MediaType.APPLICATION_JSON)
@@ -179,29 +180,26 @@ public class UsuarioResourceTest {
 	@Test
 	@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 	void adicionarTarefa_ErroTarefa() throws Exception {
-	    int opcao = -1; // Defina a opção desejada
+	    int opcao = -1;
+	    Tarefa tarefaFacil = TarefaBuilder
+	    		.umTarefa()
+	    		.comNome("Primeira Tarefa")
+	    		.comNivel(Nivel.FACIL)
+	    		.agora();
+	    tarefaFacil.setUsuario(createdUsuario);
 	    
-	    Usuario usuario = new Usuario();
-		usuario.setId(2L);
-	    usuario.setNome("Nome do Usuário");
-	    usuarioRepository.save(usuario);
-
-	    Tarefa tarefaFacil = new Tarefa();
-	    tarefaFacil.setNome("Primeira Tarefa");
-	    tarefaFacil.setNivel(Nivel.FACIL);
-	    tarefaFacil.setUsuario(usuario);
-	    
-	    Tarefa tarefaFacil2 = new Tarefa();
-	    tarefaFacil.setNome("Primeira Tarefa");
-	    tarefaFacil.setNivel(Nivel.FACIL);
+	    Tarefa tarefaFacil2 = TarefaBuilder
+	    		.umTarefa()
+	    		.comNome("Segunda Tarefa")
+	    		.comNivel(Nivel.FACIL)
+	    		.agora();
 	    tarefaRepository.save(tarefaFacil);
 	    tarefaRepository.save(tarefaFacil2);
 
-	    // Simule um cenário onde ocorre um erro relacionado à tarefa
 	    Mockito.doThrow(new ErroTarefaException("Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível."))
 	           .when(usuarioService).adicionarTarefaAoUsuario(Mockito.anyLong(), Mockito.anyInt());
 
-	    mockMvc.perform(MockMvcRequestBuilders.post("/usuarios/2/adicionarTarefa")
+	    mockMvc.perform(MockMvcRequestBuilders.post("/usuarios/1/adicionarTarefa")
 	            .contentType(MediaType.APPLICATION_JSON)
 	            .characterEncoding("UTF-8")
 	            .content(Integer.toString(opcao)))
@@ -209,6 +207,47 @@ public class UsuarioResourceTest {
 	            .andExpect(MockMvcResultMatchers.content().string("Opção inválida! Digite um número inteiro correspondente a uma tarefa disponível."))
 	            .andDo(MockMvcResultHandlers.print());
 	}
+
+	@Test
+	@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+    void filtrarTarefasPorStatus_DeveRetornarListaDeTarefas() throws Exception {
+		List<Tarefa> tarefas = new ArrayList<>();
+        Tarefa tarefaFacil = TarefaBuilder
+	    		.umTarefa()
+	    		.comId(1L)
+	    		.comNome("Primeira Tarefa")
+	    		.comStatus(TarefaStatus.PENDENTE)
+	    		.agora();
+	    tarefaFacil.setUsuario(createdUsuario);
+	    tarefaRepository.save(tarefaFacil);
+	    
+	    Tarefa tarefaFacil2 = TarefaBuilder
+	    		.umTarefa()
+	    		.comId(2L)
+	    		.comNome("Segunda Tarefa")
+	    		.comStatus(TarefaStatus.CONCLUIDA)
+	    		.agora();
+	    tarefaFacil2.setUsuario(createdUsuario);
+	    tarefaRepository.save(tarefaFacil2);
+	    
+	    tarefas.add(tarefaFacil);
+	    tarefas.add(tarefaFacil2);
+	    createdUsuario.setTarefa(tarefas);
 	
+        mockMvc.perform(MockMvcRequestBuilders.get("/usuarios/1/tarefas/status/PENDENTE"))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(MockMvcResultMatchers.jsonPath("$").isArray())
+            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(1)))
+            .andDo(MockMvcResultHandlers.print());
+    }	
 	
+	@Test
+	@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+    void nivelUsuario() throws Exception {		
+        mockMvc.perform(MockMvcRequestBuilders.get("/usuarios/1/nivel-permissao"))
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(MockMvcResultMatchers.content().string("FACIL"))
+            .andDo(MockMvcResultHandlers.print());
+    }	
 }
