@@ -13,6 +13,7 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,7 +34,8 @@ public class Usuario implements Serializable {
 	private String email;
 	private String senha;
 	
-	private String raca;
+	@Enumerated(EnumType.STRING)
+	private TipoUsuario raca;
 	
 	@OneToMany(mappedBy = "usuario")	
 	public List<Tarefa> tarefa = new ArrayList<>();
@@ -58,7 +60,7 @@ public class Usuario implements Serializable {
 		this.nome = nome;
 		this.email = email;
 		this.senha = senha;
-		setRaca(raca);;
+		this.raca = raca;
 		this.tarefasConcluidas = new HashMap<>();
         for (Nivel nivel : Nivel.values()) {
             this.tarefasConcluidas.put(nivel, 0);
@@ -96,13 +98,13 @@ public class Usuario implements Serializable {
 	public void setSenha(String senha) {
 		this.senha = senha;
 	}
-
-	public TipoUsuario getRaça() {
-		return TipoUsuario.valueOfDescricao(raca);
+	
+	public TipoUsuario getRaca() {
+		return raca;
 	}
 
 	public void setRaca(TipoUsuario raca) {
-		this.raca = raca.getDescricao();
+		this.raca = raca;
 	}
 
 	public List<Tarefa> getTarefa() {

@@ -154,7 +154,7 @@ public class TarefaResourceTest {
 	
 	@Test
     @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-	void listarTarefasDisponiveis() throws Exception {
+	void listarTarefasDisponiveis() throws Exception {		
 		mockMvc.perform(MockMvcRequestBuilders.get("/tarefas/listaTarefasDisponiveis"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))

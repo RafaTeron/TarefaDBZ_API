@@ -23,6 +23,7 @@ import br.com.rafaelAbreu.tarefaDbz.entities.Tarefa;
 import br.com.rafaelAbreu.tarefaDbz.entities.Usuario;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.Nivel;
 import br.com.rafaelAbreu.tarefaDbz.entities.enums.TarefaStatus;
+import br.com.rafaelAbreu.tarefaDbz.exceptions.ErroTarefaException;
 import br.com.rafaelAbreu.tarefaDbz.repositories.TarefaRepository;
 import br.com.rafaelAbreu.tarefaDbz.repositories.UsuarioRepository;
 
@@ -74,6 +75,23 @@ public class TarefaServiceTest {
 
 		// verificaçao
 		Assertions.assertEquals(tarefa, resultado);
+		Mockito.verify(tarefaRepository, Mockito.times(1)).findById(id);
+	}
+	
+	@Test
+	public void encontrarTarefaPorId_TarefaNaoEncontrado() throws Exception {
+		// cenario
+		Long id = 1L;
+		Mockito.when(tarefaRepository.findById(id)).thenReturn(Optional.empty());
+
+		// açao
+		try {
+			tarefaService.findById(id);
+			//verificaçao
+			Assertions.fail();
+		} catch (ErroTarefaException e) {
+			Assertions.assertEquals("Tarefa não encontrado",e.getMessage());
+		}
 		Mockito.verify(tarefaRepository, Mockito.times(1)).findById(id);
 	}
 
